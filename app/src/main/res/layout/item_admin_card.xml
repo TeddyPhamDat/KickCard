@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Card info"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:background="@android:drawable/btn_default_small"
+                android:text="PENDING"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:gravity="end">
+
+            <ImageButton
+                android:id="@+id/btnApprove"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Approve"
+                android:src="@drawable/ic_approve"
+                android:backgroundTint="?attr/colorPrimary"
+                android:tint="#7C4DFF"
+                android:scaleType="centerInside"
+                android:background="@drawable/rounded_icon_bg" />
+
+            <ImageButton
+                android:id="@+id/btnReject"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="Reject"
+                android:src="@drawable/ic_reject"
+                android:tint="#FFFFFF"
+                android:scaleType="centerInside"
+                android:background="@drawable/rounded_red_bg" />
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="Edit"
+                android:src="@drawable/ic_edit"
+                android:tint="#9E9E9E"
+                android:scaleType="centerInside"
+                android:background="@drawable/rounded_gray_bg" />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="Delete"
+                android:src="@drawable/ic_delete_material"
+                android:tint="#9E9E9E"
+                android:scaleType="centerInside"
+                android:background="@drawable/rounded_gray_bg" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

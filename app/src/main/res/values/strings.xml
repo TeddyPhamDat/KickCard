@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Assignment</string>
+    <string name="login_success_default">Login successful</string>
+</resources>

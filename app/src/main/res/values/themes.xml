@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Use a MaterialComponents / AppCompat compatible parent so AppCompatActivity works -->
+    <style name="Theme.Assignment" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+</resources>

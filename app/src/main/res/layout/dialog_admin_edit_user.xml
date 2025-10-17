@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <EditText
+        android:id="@+id/etFullname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full name" />
+
+    <EditText
+        android:id="@+id/etRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Role (e.g., ROLE_ADMIN)"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

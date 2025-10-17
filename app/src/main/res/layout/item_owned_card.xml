@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvTeam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Team" />
+
+    <TextView
+        android:id="@+id/tvRarity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rarity" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status" />
+
+    <TextView
+        android:id="@+id/tvOwner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Owner" />
+
+</LinearLayout>
