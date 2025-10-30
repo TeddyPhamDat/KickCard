@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- Use a MaterialComponents / AppCompat compatible parent so AppCompatActivity works -->
-    <style name="Theme.Assignment" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Theme.KickCard" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Material 3 color scheme or dynamic colors -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+    </style>
 </resources>

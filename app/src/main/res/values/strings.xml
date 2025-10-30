@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">Assignment</string>
     <string name="login_success_default">Login successful</string>
+
+    <array name="initial_price_range">
+        <item>50.0</item>
+        <item>750.0</item>
+    </array>
 </resources>
