@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="status_approved">#C8E6C9</color> <!-- Light Green -->
+    <color name="status_pending">#FFF9C4</color>  <!-- Light Yellow -->
+    <color name="status_rejected">#FFCDD2</color>  <!-- Light Red -->
 </resources>

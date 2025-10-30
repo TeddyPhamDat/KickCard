@@ -20,7 +20,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private EditText etUsername;
     private EditText etPassword;
     private Button btnLogin;
-    private TextView tvRegisterHint;
+    // FIX: Changed variable to represent the correct view
+    private TextView tvRegister;
     private ProgressBar progressBar;
 
     private LoginContract.Presenter presenter;
@@ -33,7 +34,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
-        tvRegisterHint = findViewById(R.id.tvRegisterHint);
+        // FIX: Finding the correct clickable TextView ID
+        tvRegister = findViewById(R.id.tvRegister);
         progressBar = findViewById(R.id.progressBar);
 
         presenter = new LoginPresenter(this);
@@ -45,7 +47,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
             presenter.login(username, password);
         });
 
-        tvRegisterHint.setOnClickListener(v -> presenter.onRegisterClick());
+        // FIX: Setting the listener on the correct view
+        tvRegister.setOnClickListener(v -> presenter.onRegisterClick());
     }
 
     @Override
@@ -57,17 +60,20 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
+        btnLogin.setText("");
+        btnLogin.setEnabled(false);
     }
 
     @Override
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
+        btnLogin.setText("Enter the Pitch");
+        btnLogin.setEnabled(true);
     }
 
     @Override
     public void showLoginSuccess(String message) {
-        // Ensure we always pass a non-empty text to Toast to avoid IllegalStateException
-        String text = (message == null || message.trim().isEmpty()) ? getString(R.string.login_success_default) : message;
+        String text = (message == null || message.trim().isEmpty()) ? "Login Successful" : message;
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 

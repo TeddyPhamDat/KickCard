@@ -3,17 +3,23 @@ package com.example.assignment.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.assignment.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.assignment.data.api.ApiService;
 import com.example.assignment.data.api.RetrofitClient;
 import com.example.assignment.data.model.User;
 import com.example.assignment.utils.SessionManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Locale;
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,49 +34,72 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNav);
 
-        // default fragment -> Home screen
-        replaceFragment(new HomeFragment());
-        bottomNav.setSelectedItemId(R.id.menu_home);
-        
-        // Initially hide admin tab until we check user role
-        bottomNav.getMenu().findItem(R.id.menu_admin).setVisible(false);    bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        // Initially hide the admin tab. It will be made visible in onResume if the user is an admin.
+        bottomNav.getMenu().findItem(R.id.menu_admin).setVisible(false);
+
+        // Set up the listener for when the user clicks a navigation item.
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                Fragment f = null;
-                if (id == R.id.menu_home) f = new HomeFragment();
-                else if (id == R.id.menu_my_cards) f = new MyCardsFragment();
-                else if (id == R.id.menu_wallet) f = new WalletFragment();
-                else if (id == R.id.menu_profile) f = new ProfileFragment();
-                else if (id == R.id.menu_admin) f = new AdminFragment();
-                if (f != null) replaceFragment(f);
+                Fragment selectedFragment = null;
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.menu_home) {
+                    selectedFragment = new HomeFragment();
+                } else if (itemId == R.id.menu_my_cards) {
+                    selectedFragment = new MyCardsFragment();
+                } else if (itemId == R.id.menu_wallet) {
+                    selectedFragment = new WalletFragment();
+                } else if (itemId == R.id.menu_profile) {
+                    selectedFragment = new ProfileFragment();
+                } else if (itemId == R.id.menu_admin) {
+                    selectedFragment = new AdminFragment();
+                }
+
+                if (selectedFragment != null) {
+                    replaceFragment(selectedFragment);
+                }
                 return true;
             }
         });
 
+        // --- CORRECT INITIAL STATE ---
+        // Set Home as the default selected item. This will trigger the listener above
+        // and load the HomeFragment automatically.
+        if (savedInstanceState == null) {
+            bottomNav.setSelectedItemId(R.id.menu_home);
+        }
+
         // Header profile name opens ProfileFragment for viewing profile details
-        findViewById(R.id.tvProfileName).setOnClickListener(v -> replaceFragment(new ProfileFragment()));
-        
+        findViewById(R.id.tvProfileName).setOnClickListener(v -> {
+            replaceFragment(new ProfileFragment());
+            bottomNav.setSelectedItemId(R.id.menu_profile);
+        });
+
         // FAB for quick edit access from any screen
-        findViewById(R.id.fabEditProfile).setOnClickListener(v -> startActivity(new Intent(MainActivity.this, EditProfileActivity.class)));
+        findViewById(R.id.fabEditProfile).setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class)));
     }
 
-    private void replaceFragment(Fragment f) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, f).commit();
+    private void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Refresh user data every time the activity is resumed to catch any changes
         refreshProfileHeader();
     }
 
     private void refreshProfileHeader() {
         SessionManager session = new SessionManager(this);
         String token = session.fetchToken();
-        android.util.Log.d("MainActivity", "refreshProfileHeader: token=" + (token == null ? "<null>" : (token.length() + " chars")));
-        android.widget.TextView tvProfile = findViewById(R.id.tvProfileName);
-        
+        TextView tvProfile = findViewById(R.id.tvProfileName);
+
         if (token != null && !token.isEmpty()) {
             ApiService api = RetrofitClient.getApiService(this);
             Call<User> call = api.getCurrentUser("Bearer " + token);
@@ -78,54 +107,44 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        User u = response.body();
-                        String displayName = u.getFullname();
+                        User user = response.body();
+                        String displayName = user.getFullname();
                         if (displayName == null || displayName.trim().isEmpty()) {
-                            displayName = u.getUsername();
+                            displayName = user.getUsername();
                         }
                         tvProfile.setText("Hello, " + displayName);
-                        session.saveProfile(u.getFullname(), u.getPhone(), u.getAddress(), u.getAvatarUrl());
-                        session.saveUserId(u.getId());
-                        session.saveUsername(u.getUsername());
-                        
-                        // Show/hide admin tab based on role
-                        boolean isAdmin = u.getRole() != null && u.getRole().toUpperCase().contains("ADMIN");
+                        session.saveProfile(user.getFullname(), user.getPhone(), user.getAddress(), user.getAvatarUrl());
+                        session.saveUserId(user.getId());
+                        session.saveUsername(user.getUsername());
+
+                        // --- DYNAMIC UI LOGIC BASED ON USER ROLE ---
+                        boolean isAdmin = user.getRole() != null && user.getRole().toUpperCase().contains("ADMIN");
+
+                        // Show/hide menu items based on the role
                         bottomNav.getMenu().findItem(R.id.menu_admin).setVisible(isAdmin);
-                        // Admins shouldn't see My Cards or Wallet tabs
                         bottomNav.getMenu().findItem(R.id.menu_my_cards).setVisible(!isAdmin);
                         bottomNav.getMenu().findItem(R.id.menu_wallet).setVisible(!isAdmin);
-                        
-                        // if user is an admin, open admin fragment by default
+
+                        // This is why you saw the Admin page!
+                        // If the user is an admin, override the default and switch to the AdminFragment.
                         if (isAdmin) {
-                            replaceFragment(new com.example.assignment.ui.AdminFragment());
+                            replaceFragment(new AdminFragment());
                             bottomNav.setSelectedItemId(R.id.menu_admin);
                         }
-                        // fetch wallet balance and update header
-                        com.example.assignment.data.api.ApiService api2 = com.example.assignment.data.api.RetrofitClient.getApiService(MainActivity.this);
-                        api2.getWalletBalance("Bearer " + token).enqueue(new retrofit2.Callback<java.util.Map<String, Object>>() {
-                            @Override
-                            public void onResponse(retrofit2.Call<java.util.Map<String, Object>> call, retrofit2.Response<java.util.Map<String, Object>> response) {
-                                if (response.isSuccessful() && response.body() != null) {
-                                    Object b = response.body().get("balance");
-                                    try {
-                                        double bal = Double.parseDouble(b.toString());
-                                        SessionManager s2 = new SessionManager(MainActivity.this);
-                                        s2.saveWalletBalance(bal);
-                                        android.widget.TextView tvB = findViewById(R.id.tvBalance);
-                                        tvB.setText("Balance: $" + String.format(java.util.Locale.US, "%.2f", bal));
-                                    } catch (Exception e) { }
-                                }
-                            }
 
-                            @Override
-                            public void onFailure(retrofit2.Call<java.util.Map<String, Object>> call, Throwable t) { }
-                        });
+                        // Fetch wallet balance for all non-admin users
+                        if (!isAdmin) {
+                            fetchWalletBalance(token);
+                        } else {
+                            // Hide balance for admins
+                            findViewById(R.id.tvBalance).setVisibility(View.GONE);
+                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-                    // Fallback to saved name
+                    // Fallback to saved name from session if network fails
                     String savedName = session.getFullname();
                     if (savedName != null && !savedName.isEmpty()) {
                         tvProfile.setText("Hello, " + savedName);
@@ -134,7 +153,36 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
             tvProfile.setText("Hello, User");
+            // Handle logged out state if necessary
         }
     }
-}
 
+    private void fetchWalletBalance(String token) {
+        ApiService api = RetrofitClient.getApiService(this);
+        api.getWalletBalance("Bearer " + token).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                TextView tvBalance = findViewById(R.id.tvBalance);
+                if (response.isSuccessful() && response.body() != null) {
+                    Object balanceObj = response.body().get("balance");
+                    try {
+                        double balance = Double.parseDouble(balanceObj.toString());
+                        SessionManager session = new SessionManager(MainActivity.this);
+                        session.saveWalletBalance(balance);
+                        tvBalance.setVisibility(View.VISIBLE);
+                        tvBalance.setText("Balance: $" + String.format(Locale.US, "%.2f", balance));
+                    } catch (Exception e) {
+                        tvBalance.setVisibility(View.GONE);
+                    }
+                } else {
+                    tvBalance.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                findViewById(R.id.tvBalance).setVisibility(View.GONE);
+            }
+        });
+    }
+}
