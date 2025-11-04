@@ -1,5 +1,7 @@
 package com.example.assignment.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Listing {
     private Long id;
     private Long sellerId;
@@ -12,6 +14,10 @@ public class Listing {
     private String status = "PENDING";
     private String createdAt;
     private String updatedAt;
+    private String rarity;
+
+    @SerializedName("baseImageUrl")
+    private String image;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -35,4 +41,8 @@ public class Listing {
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
+    public String getRarity() { return rarity; }
+    public void setRarity(String rarity) { this.rarity = rarity; }
 }

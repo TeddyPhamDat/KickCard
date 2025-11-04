@@ -42,17 +42,6 @@
         android:layout_marginTop="56dp"
         android:layout_marginBottom="56dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabEditProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="Edit profile"
-        app:srcCompat="@android:drawable/ic_menu_edit"
-        app:tint="@android:color/white"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="-28dp" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"

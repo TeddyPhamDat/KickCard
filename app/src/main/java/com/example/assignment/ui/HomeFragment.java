@@ -1,6 +1,7 @@
 package com.example.assignment.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.assignment.R;
 import com.example.assignment.data.model.HomeListing;
 import com.example.assignment.data.repository.HomeRepository;
-import com.example.assignment.presenter.ListingPresenter;
+import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,20 +49,20 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         etName = view.findViewById(R.id.etSearchName);
-    etMinPrice = view.findViewById(R.id.etMinPrice);
-    etMaxPrice = view.findViewById(R.id.etMaxPrice);
+        etMinPrice = view.findViewById(R.id.etMinPrice);
+        etMaxPrice = view.findViewById(R.id.etMaxPrice);
         btnSearch = view.findViewById(R.id.btnSearch);
         recycler = view.findViewById(R.id.recyclerHomeListings);
         progress = view.findViewById(R.id.progressHome);
-    swipeRefresh = view.findViewById(R.id.swipeRefresh);
+        swipeRefresh = view.findViewById(R.id.swipeRefresh);
 
-    adapter = new HomeListingAdapter(new java.util.ArrayList<>());
+        adapter = new HomeListingAdapter(new java.util.ArrayList<>());
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
         btnSearch.setOnClickListener(v -> doSearch());
 
-    swipeRefresh.setOnRefreshListener(() -> doSearch());
+        swipeRefresh.setOnRefreshListener(() -> doSearch());
 
         // initial load
         doSearch();
@@ -82,22 +82,29 @@ public class HomeFragment extends Fragment {
         } catch (NumberFormatException ignored) {}
         progress.setVisibility(View.VISIBLE);
         HomeRepository repo = new HomeRepository(getContext(), BASE_URL);
-        repo.getHomeListings(name.isEmpty() ? null : name, min, max).enqueue(new Callback<java.util.List<HomeListing>>() {
+        repo.getHomeListings(name.isEmpty() ? null : name, min, max).enqueue(new Callback<List<HomeListing>>() {
             @Override
-            public void onResponse(Call<java.util.List<HomeListing>> call, Response<java.util.List<HomeListing>> response) {
+            public void onResponse(Call<List<HomeListing>> call, Response<List<HomeListing>> response) {
                 progress.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.d("HomeFragment", "Listings received: " + new Gson().toJson(response.body()));
                     adapter.setItems(response.body());
                 } else {
+                    try {
+                        Log.e("HomeFragment", "Response error: " + response.code() + " " + response.errorBody().string());
+                    } catch (Exception e) {
+                        Log.e("HomeFragment", "Response error: " + response.code());
+                    }
                     Toast.makeText(getContext(), "Failed to load home listings", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<java.util.List<HomeListing>> call, Throwable t) {
+            public void onFailure(Call<List<HomeListing>> call, Throwable t) {
                 progress.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
+                Log.e("HomeFragment", "Network error", t);
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });

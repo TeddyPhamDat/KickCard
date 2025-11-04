@@ -75,10 +75,6 @@ public class MainActivity extends AppCompatActivity {
             replaceFragment(new ProfileFragment());
             bottomNav.setSelectedItemId(R.id.menu_profile);
         });
-
-        // FAB for quick edit access from any screen
-        findViewById(R.id.fabEditProfile).setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class)));
     }
 
     private void replaceFragment(Fragment fragment) {

@@ -1,5 +1,7 @@
 package com.example.assignment.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class HomeListing {
     public Long listingId;
     public Long cardId;
@@ -13,6 +15,9 @@ public class HomeListing {
     public String team;
     public String ownerName; // tên chủ sở hữu
 
+    @SerializedName("baseImageUrl")
+    public String image;
+
     public Long getListingId() { return listingId; }
     public Long getCardId() { return cardId; }
     public Double getPrice() { return price; }
@@ -24,4 +29,5 @@ public class HomeListing {
     public String getRarity() { return rarity; }
     public String getTeam() { return team; }
     public String getOwnerName() { return ownerName; }
+    public String getImage() { return image; }
 }

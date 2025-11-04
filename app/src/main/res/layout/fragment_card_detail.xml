@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?> <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" tools:context=".ui.CardDetailFragment"><!-- Consistent background from other screens -->
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.CardDetailFragment">
+
+    <!-- Background -->
     <ImageView
         android:id="@+id/ivBackground"
         android:layout_width="match_parent"
@@ -8,12 +16,10 @@
         android:src="@drawable/ic_soccer_stadium_background"
         tools:ignore="ContentDescription" />
 
-    <!-- Scrollable content area -->
+    <!-- Scrollable content -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,16 +27,19 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="16dp">
 
-            <!-- Main Card Image in a MaterialCardView -->
+            <!-- Main Card Image -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/imageCardContainer"
                 android:layout_width="0dp"
-                android:layout_height="220dp"
-                android:layout_margin="16dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="8dp"
+                app:layout_constraintDimensionRatio="3:4.5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -48,13 +57,13 @@
                 android:id="@+id/tvCardName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
+                android:gravity="center_horizontal"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageCardContainer"
+                app:layout_constraintTop_toBottomOf="@+id/imageCardContainer"
                 tools:text="Lionel Messi" />
 
             <TextView
@@ -64,21 +73,22 @@
                 android:layout_marginTop="4dp"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                app:layout_constraintStart_toStartOf="@id/tvCardName"
-                app:layout_constraintTop_toBottomOf="@id/tvCardName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCardName"
                 tools:text="Legendary" />
 
-            <!-- Card for Detailed Information (Status, Owner, Price) -->
+            <!-- Details Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/detailsCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginTop="16dp"
                 app:cardCornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvCardRarity">
-                <!-- Inner content of this card remains the same -->
+                app:layout_constraintTop_toBottomOf="@+id/tvCardRarity">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -100,7 +110,7 @@
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvStatusLabel"
+                        app:layout_constraintTop_toTopOf="@+id/tvStatusLabel"
                         tools:text="APPROVED" />
 
                     <TextView
@@ -111,7 +121,7 @@
                         android:text="Current Owner"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvStatusLabel" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
 
                     <TextView
                         android:id="@+id/tvCardOwner"
@@ -120,7 +130,7 @@
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvOwnerLabel"
+                        app:layout_constraintTop_toTopOf="@+id/tvOwnerLabel"
                         tools:text="collector123" />
 
                     <View
@@ -131,7 +141,7 @@
                         android:background="?attr/colorOutlineVariant"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvOwnerLabel" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvOwnerLabel" />
 
                     <TextView
                         android:id="@+id/tvPriceLabel"
@@ -141,7 +151,7 @@
                         android:text="Price"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/divider" />
+                        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
                     <TextView
                         android:id="@+id/tvCardPrice"
@@ -151,25 +161,24 @@
                         android:textColor="?attr/colorPrimary"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tvPriceLabel"
+                        app:layout_constraintTop_toTopOf="@+id/tvPriceLabel"
                         tools:text="VND 5,000,000" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card for Rejection Reason (only visible when needed) -->
+            <!-- Rejection Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/rejectionCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginTop="16dp"
                 android:visibility="gone"
                 app:cardBackgroundColor="?attr/colorErrorContainer"
                 app:cardCornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/detailsCard"
+                app:layout_constraintTop_toBottomOf="@+id/detailsCard"
                 tools:visibility="visible">
-                <!-- Inner content of this card remains the same -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -192,33 +201,36 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Purchase Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBuy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:paddingVertical="14dp"
+                android:text="Purchase Card"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rejectionCard" />
+
+            <!-- Progress Bar -->
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="8dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/btnBuy"
+                app:layout_constraintEnd_toEndOf="@+id/btnBuy"
+                app:layout_constraintStart_toStartOf="@+id/btnBuy"
+                app:layout_constraintTop_toTopOf="@+id/btnBuy"
+                tools:visibility="visible" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <!-- Purchase Button (FIXED AT THE BOTTOM) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBuy"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:paddingVertical="14dp"
-        android:text="Purchase Card"
-        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Progress Bar (attached to button) -->
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="8dp"
-        android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/btnBuy"
-        app:layout_constraintEnd_toEndOf="@id/btnBuy"
-        app:layout_constraintStart_toStartOf="@id/btnBuy"
-        app:layout_constraintTop_toTopOf="@id/btnBuy"
-        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
