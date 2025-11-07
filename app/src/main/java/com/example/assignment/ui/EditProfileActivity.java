@@ -60,9 +60,6 @@ public class EditProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, "Đã chọn ảnh thành công!", Toast.LENGTH_SHORT).show();
                         Glide.with(this)
                                 .load(selectedImageUri)
-                                .centerCrop()
-                                .placeholder(R.drawable.ic_person)
-                                .error(R.drawable.ic_person)
                                 .into(ivProfileAvatar);
                     }
                 } else if (result.getResultCode() == RESULT_CANCELED) {
@@ -122,16 +119,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         
                         // Load avatar
                         if (currentAvatarUrl != null && !currentAvatarUrl.isEmpty()) {
-                            String imageUrl = currentAvatarUrl;
-                            if (!imageUrl.startsWith("http")) {
-                                imageUrl = "http://10.0.2.2:8080" + (imageUrl.startsWith("/") ? "" : "/") + imageUrl;
-                            }
                             etAvatarUrl.setText(currentAvatarUrl);
                             Glide.with(EditProfileActivity.this)
-                                    .load(imageUrl)
-                                    .centerCrop()
-                                    .placeholder(R.drawable.ic_person)
-                                    .error(R.drawable.ic_person)
+                                    .load(currentAvatarUrl)
                                     .into(ivProfileAvatar);
                         }
                     }
@@ -266,17 +256,21 @@ public class EditProfileActivity extends AppCompatActivity {
                     
                     if (response.isSuccessful() && response.body() != null) {
                         String avatarUrl = response.body().get("url");
+                        android.util.Log.d("EditProfile", "Avatar uploaded: " + avatarUrl);
+                        
+                        // Prepare full image URL
+                        String imageUrl = avatarUrl;
+                        if (!imageUrl.startsWith("http")) {
+                            imageUrl = "http://10.0.2.2:8080" + (imageUrl.startsWith("/") ? "" : "/") + imageUrl;
+                        }
+                        final String finalImageUrl = imageUrl;
+                        android.util.Log.d("EditProfile", "Loading from: " + finalImageUrl);
                         
                         // Update UI immediately with new avatar
                         runOnUiThread(() -> {
-                            if (!isFinishing() && !isDestroyed()) {
-                                Glide.with(EditProfileActivity.this)
-                                        .load(avatarUrl)
-                                        .centerCrop()
-                                        .placeholder(R.drawable.ic_person)
-                                        .error(R.drawable.ic_person)
-                                        .into(ivProfileAvatar);
-                            }
+                            Glide.with(EditProfileActivity.this)
+                                    .load(finalImageUrl)
+                                    .into(ivProfileAvatar);
                         });
                         
                         // Save profile with new avatar URL

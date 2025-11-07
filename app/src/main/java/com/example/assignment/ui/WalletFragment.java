@@ -1,6 +1,9 @@
 package com.example.assignment.ui;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -8,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -17,6 +21,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.button.MaterialButton;
 
 import com.example.assignment.R;
 import com.example.assignment.data.api.RetrofitClient;
@@ -41,7 +47,6 @@ public class WalletFragment extends Fragment {
     private TextView tvWalletBalance;
     private TextView tvSelectedAmount;
     private EditText etCustomAmount;
-    private Button btn50k, btn100k, btn200k, btn500k;
     private Button btnTopUp, btnTransactionHistory;
     private ProgressBar progressBar;
     
@@ -66,10 +71,6 @@ public class WalletFragment extends Fragment {
         tvWalletBalance = view.findViewById(R.id.tvWalletBalance);
         tvSelectedAmount = view.findViewById(R.id.tvSelectedAmount);
         etCustomAmount = view.findViewById(R.id.etCustomAmount);
-        btn50k = view.findViewById(R.id.btn50k);
-        btn100k = view.findViewById(R.id.btn100k);
-        btn200k = view.findViewById(R.id.btn200k);
-        btn500k = view.findViewById(R.id.btn500k);
         btnTopUp = view.findViewById(R.id.btnTopUp);
         btnTransactionHistory = view.findViewById(R.id.btnTransactionHistory);
         progressBar = view.findViewById(R.id.progressBar);
@@ -81,12 +82,13 @@ public class WalletFragment extends Fragment {
     }
     
     private void setupAmountButtons() {
-        btn50k.setOnClickListener(v -> selectAmount(50000));
-        btn100k.setOnClickListener(v -> selectAmount(100000));
-        btn200k.setOnClickListener(v -> selectAmount(200000));
-        btn500k.setOnClickListener(v -> selectAmount(500000));
-        
-        btnTopUp.setOnClickListener(v -> topUpWallet());
+        btnTopUp.setOnClickListener(v -> {
+            if (selectedAmount > 0) {
+                showPaymentConfirmDialog(selectedAmount);
+            } else {
+                topUpWallet();
+            }
+        });
         btnTransactionHistory.setOnClickListener(v -> showTransactionHistory());
         
         etCustomAmount.addTextChangedListener(new TextWatcher() {
@@ -112,15 +114,37 @@ public class WalletFragment extends Fragment {
         });
     }
     
-    private void selectAmount(long amount) {
-        selectedAmount = amount;
-        etCustomAmount.setText("");
-        updateSelectedAmountDisplay();
-        Toast.makeText(getContext(), "Selected: " + formatVND(amount), Toast.LENGTH_SHORT).show();
+    private void showPaymentConfirmDialog(long amount) {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_payment_confirm);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        
+        TextView tvAmount = dialog.findViewById(R.id.tvDialogAmount);
+        TextView tvAmountVND = dialog.findViewById(R.id.tvDialogAmountVND);
+        MaterialButton btnConfirm = dialog.findViewById(R.id.btnDialogConfirm);
+        MaterialButton btnCancel = dialog.findViewById(R.id.btnDialogCancel);
+        
+        tvAmount.setText(formatVND(amount));
+        tvAmountVND.setText("Amount: " + String.format("%,d VND", amount));
+        
+        btnConfirm.setOnClickListener(v -> {
+            dialog.dismiss();
+            topUpWallet();
+        });
+        
+        btnCancel.setOnClickListener(v -> {
+            dialog.dismiss();
+            selectedAmount = 0;
+            updateSelectedAmountDisplay();
+        });
+        
+        dialog.show();
     }
     
     private void updateSelectedAmountDisplay() {
-        tvSelectedAmount.setText("Selected amount: " + formatVND(selectedAmount));
+        tvSelectedAmount.setText("Selected: " + formatVND(selectedAmount));
     }
     
     private void loadWalletBalance() {

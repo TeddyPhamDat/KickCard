@@ -22,21 +22,12 @@
             android:layout_marginBottom="24dp" />
 
         <!-- Avatar Section -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:cardCornerRadius="60dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <ImageView
-                android:id="@+id/ivProfileAvatar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_person"
-                android:background="#E0E0E0" />
-        </com.google.android.material.card.MaterialCardView>
+        <ImageView
+            android:id="@+id/ivProfileAvatar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Profile Avatar" />
 
         <LinearLayout
             android:layout_width="match_parent"

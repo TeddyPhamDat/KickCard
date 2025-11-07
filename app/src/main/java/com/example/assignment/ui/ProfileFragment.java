@@ -136,18 +136,9 @@ public class ProfileFragment extends Fragment {
         
         // Load avatar
         if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
-            String imageUrl = user.getAvatarUrl();
-            if (!imageUrl.startsWith("http")) {
-                imageUrl = "http://10.0.2.2:8080" + (imageUrl.startsWith("/") ? "" : "/") + imageUrl;
-            }
             Glide.with(this)
-                    .load(imageUrl)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_person)
-                    .error(R.drawable.ic_person)
+                    .load(user.getAvatarUrl())
                     .into(imgProfileAvatar);
-        } else {
-            imgProfileAvatar.setImageResource(R.drawable.ic_person);
         }
         
         // show cached balance if available

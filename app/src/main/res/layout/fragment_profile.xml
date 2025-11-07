@@ -81,26 +81,24 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Avatar/Icon with Background -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="90dp"
-                    android:layout_height="90dp"
+                <!-- Avatar with Border -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
                     android:layout_gravity="center_horizontal"
-                    app:cardCornerRadius="45dp"
-                    app:cardElevation="4dp"
-                    app:strokeColor="@color/stadium_green"
-                    app:strokeWidth="3dp">
+                    app:cardCornerRadius="70dp"
+                    app:cardElevation="8dp"
+                    app:strokeWidth="4dp"
+                    app:strokeColor="@color/stadium_green">
 
                     <ImageView
                         android:id="@+id/imgProfileAvatar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/ic_profile"
                         android:scaleType="centerCrop"
-                        android:padding="12dp"
-                        android:background="@color/pitch_green"
-                        android:tint="@android:color/white" />
-                </com.google.android.material.card.MaterialCardView>
+                        android:src="@drawable/ic_profile"
+                        android:contentDescription="Profile Avatar" />
+                </androidx.cardview.widget.CardView>
 
                 <!-- Name -->
                 <TextView
