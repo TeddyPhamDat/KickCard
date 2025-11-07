@@ -82,13 +82,7 @@ public class WalletFragment extends Fragment {
     }
     
     private void setupAmountButtons() {
-        btnTopUp.setOnClickListener(v -> {
-            if (selectedAmount > 0) {
-                showPaymentConfirmDialog(selectedAmount);
-            } else {
-                topUpWallet();
-            }
-        });
+        btnTopUp.setOnClickListener(v -> topUpWallet());
         btnTransactionHistory.setOnClickListener(v -> showTransactionHistory());
         
         etCustomAmount.addTextChangedListener(new TextWatcher() {
@@ -112,35 +106,6 @@ public class WalletFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-    }
-    
-    private void showPaymentConfirmDialog(long amount) {
-        Dialog dialog = new Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_payment_confirm);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(true);
-        
-        TextView tvAmount = dialog.findViewById(R.id.tvDialogAmount);
-        TextView tvAmountVND = dialog.findViewById(R.id.tvDialogAmountVND);
-        MaterialButton btnConfirm = dialog.findViewById(R.id.btnDialogConfirm);
-        MaterialButton btnCancel = dialog.findViewById(R.id.btnDialogCancel);
-        
-        tvAmount.setText(formatVND(amount));
-        tvAmountVND.setText("Amount: " + String.format("%,d VND", amount));
-        
-        btnConfirm.setOnClickListener(v -> {
-            dialog.dismiss();
-            topUpWallet();
-        });
-        
-        btnCancel.setOnClickListener(v -> {
-            dialog.dismiss();
-            selectedAmount = 0;
-            updateSelectedAmountDisplay();
-        });
-        
-        dialog.show();
     }
     
     private void updateSelectedAmountDisplay() {
