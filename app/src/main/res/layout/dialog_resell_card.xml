@@ -5,18 +5,53 @@
     android:orientation="vertical"
     android:padding="24dp">
 
+    <!-- Card Name -->
+    <TextView
+        android:id="@+id/tvCardName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Card Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Current Price -->
+    <TextView
+        android:id="@+id/tvCurrentPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Current Price: $50.00"
+        android:textSize="14sp"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Rejection Reason (only visible for retry resell) -->
+    <TextView
+        android:id="@+id/tvRejectionReason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rejection Reason: Image quality too low"
+        android:textSize="13sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone" />
+
+    <!-- Input hint -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nhập giá bán lại cho thẻ này"
-        android:textSize="16sp"
-        android:layout_marginBottom="12dp" />
+        android:text="Set new price for reselling:"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp" />
 
+    <!-- Price Input -->
     <EditText
-        android:id="@+id/etResellPrice"
+        android:id="@+id/etNewPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Giá bán lại (VND)"
-        android:inputType="numberDecimal" />
+        android:hint="Enter new price"
+        android:inputType="numberDecimal"
+        android:textSize="16sp" />
 
 </LinearLayout>

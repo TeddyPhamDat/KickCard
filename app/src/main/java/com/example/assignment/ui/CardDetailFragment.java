@@ -1,5 +1,6 @@
 package com.example.assignment.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,90 +154,145 @@ public class CardDetailFragment extends Fragment {
         if ("APPROVED".equalsIgnoreCase(card.getStatus()) && !isOwnedByCurrentUser) {
             btnBuy.setVisibility(View.VISIBLE);
             btnBuy.setEnabled(true);
-            btnBuy.setOnClickListener(v -> confirmBuy());
+            btnBuy.setOnClickListener(v -> openPaymentActivity());
         } else {
             btnBuy.setVisibility(View.GONE);
         }
     }
 
-    // --- YOUR EXISTING BUYING LOGIC: NO CHANGES NEEDED ---
+    // --- NEW PURCHASE LOGIC USING TRADING API ---
 
-    private void confirmBuy() {
+    private void openPaymentActivity() {
         if (currentCard == null) return;
-        // fetch wallet balance for user
-        WalletRepository walletRepo = new WalletRepository(getContext(), BASE_URL);
-        walletRepo.getBalance().enqueue(new Callback<Map<String, Object>>() {
-            @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                double balance = 0.0;
-                if (response.isSuccessful() && response.body() != null && response.body().get("balance") != null) {
-                    try {
-                        balance = Double.parseDouble(response.body().get("balance").toString());
-                    } catch (Exception e) { /* ignore */ }
-                }
-                showConfirmDialog(balance);
-            }
 
-            @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                showConfirmDialog(0.0);
-            }
-        });
+        // Show confirmation dialog
+        new android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Xác nhận mua thẻ")
+            .setMessage(String.format("Bạn có chắc chắn muốn mua thẻ '%s' với giá %,.0f VND?\n\nSố dư ví của bạn sẽ bị trừ.",
+                currentCard.getName(),
+                currentCard.getPrice()))
+            .setPositiveButton("Mua", (dialog, which) -> purchaseCard())
+            .setNegativeButton("Hủy", null)
+            .show();
     }
 
-    private void showConfirmDialog(double balance) {
-        String msg = "Buy " + currentCard.getName() + " for $" + currentCard.getPrice() + "?\nYour balance: $" + balance;
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(getContext())
-                .setTitle("Confirm Purchase")
-                .setMessage(msg)
-                .setPositiveButton("Buy", (d, w) -> doBuy())
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void doBuy() {
+    private void purchaseCard() {
         if (currentCard == null) return;
+
+        // Show loading
         btnBuy.setEnabled(false);
-        progressBar.setVisibility(View.VISIBLE);
-        TradingRepository repo = new TradingRepository(getContext(), BASE_URL);
-        repo.buyCard(currentCard.getId()).enqueue(new Callback<Map<String, Object>>() {
+        btnBuy.setText("Đang xử lý...");
+
+        // Get token using SessionManager
+        com.example.assignment.utils.SessionManager sessionManager = 
+            new com.example.assignment.utils.SessionManager(requireContext());
+        String token = sessionManager.fetchToken();
+
+        if (token == null || token.isEmpty()) {
+            Toast.makeText(getContext(), "Chưa đăng nhập", Toast.LENGTH_SHORT).show();
+            btnBuy.setEnabled(true);
+            btnBuy.setText("Mua ngay");
+            return;
+        }
+
+        // Call API to buy card
+        com.example.assignment.data.api.ApiService apiService = 
+            com.example.assignment.data.api.RetrofitClient.getClient(requireContext(), "http://10.0.2.2:8080")
+                .create(com.example.assignment.data.api.ApiService.class);
+
+        apiService.buyCard("Bearer " + token, currentCard.getId()).enqueue(new retrofit2.Callback<java.util.Map<String, Object>>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                btnBuy.setEnabled(true);
-                progressBar.setVisibility(View.GONE);
+            public void onResponse(retrofit2.Call<java.util.Map<String, Object>> call, retrofit2.Response<java.util.Map<String, Object>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Map<String, Object> body = response.body();
-                    // update session balance if provided
-                    if (body.get("newBalance") != null) {
-                        try {
-                            double nb = Double.parseDouble(body.get("newBalance").toString());
-                            SessionManager session = new SessionManager(getContext());
-                            session.saveWalletBalance(nb);
-                        } catch (Exception e) { /* ignore */ }
+                    java.util.Map<String, Object> result = response.body();
+                    Boolean success = (Boolean) result.get("success");
+                    
+                    if (success != null && success) {
+                        // Purchase successful
+                        Toast.makeText(getContext(), "🎉 Mua thẻ thành công!", Toast.LENGTH_LONG).show();
+                        btnBuy.setVisibility(View.GONE);
+                        
+                        // Refresh wallet balance
+                        refreshWalletBalance();
+                        
+                        // Navigate back or refresh
+                        requireActivity().getSupportFragmentManager().popBackStack();
+                    } else {
+                        String error = (String) result.get("error");
+                        Toast.makeText(getContext(), "Lỗi: " + (error != null ? error : "Không xác định"), Toast.LENGTH_LONG).show();
+                        btnBuy.setEnabled(true);
+                        btnBuy.setText("Mua ngay");
                     }
-                    // show success
-                    Toast.makeText(getContext(), "Purchase successful", Toast.LENGTH_LONG).show();
-                    // remove or update UI
-                    btnBuy.setVisibility(View.GONE);
-                    // mark sold locally
-                    currentCard.setStatus("SOLD");
-                    // Optionally, navigate away or refresh
-                    requireActivity().getSupportFragmentManager().popBackStack();
                 } else {
-                    String err = "Purchase failed";
-                    try {
-                        if (response.errorBody() != null) err = response.errorBody().string();
-                    } catch (Exception ex) { /* ignore */ }
-                    Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Lỗi: " + response.message(), Toast.LENGTH_SHORT).show();
+                    btnBuy.setEnabled(true);
+                    btnBuy.setText("Mua ngay");
                 }
             }
 
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+            public void onFailure(retrofit2.Call<java.util.Map<String, Object>> call, Throwable t) {
+                Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 btnBuy.setEnabled(true);
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                btnBuy.setText("Mua ngay");
             }
         });
+    }
+
+    private void refreshWalletBalance() {
+        // Get SessionManager for later use
+        final com.example.assignment.utils.SessionManager sessionManager = 
+            new com.example.assignment.utils.SessionManager(requireContext());
+        String token = sessionManager.fetchToken();
+
+        if (token == null || token.isEmpty()) return;
+
+        // Use direct HTTP call instead of ApiService to handle dynamic response
+        final String finalToken = token;
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL("http://10.0.2.2:8080/api/users/me");
+                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Bearer " + finalToken);
+                conn.setRequestProperty("Content-Type", "application/json");
+                
+                if (conn.getResponseCode() == 200) {
+                    java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+                    
+                    // Parse JSON response
+                    org.json.JSONObject jsonResponse = new org.json.JSONObject(response.toString());
+                    if (jsonResponse.getBoolean("success")) {
+                        org.json.JSONObject userData = jsonResponse.getJSONObject("data");
+                        double newBalance = userData.getDouble("walletBalance");
+                        
+                        // Update using SessionManager
+                        sessionManager.saveWalletBalance(newBalance);
+                    }
+                }
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000 && resultCode == getActivity().RESULT_OK) {
+            // Payment thành công, ẩn nút buy và refresh card status
+            btnBuy.setVisibility(View.GONE);
+            Toast.makeText(getContext(), "Giao dịch hoàn tất!", Toast.LENGTH_LONG).show();
+
+            // Optionally refresh card data hoặc navigate back
+            requireActivity().getSupportFragmentManager().popBackStack();
+        }
     }
 }

@@ -37,6 +37,15 @@ public class SecurityConfig {
             "/swagger-ui/index.html",
             "/error"
         ).permitAll()
+                // VNPay và PayOS webhooks và return/cancel URLs (KHÔNG cần authentication)
+                .requestMatchers(
+                    "/api/payments/webhook/**",
+                    "/api/payments/vnpay-return/**", 
+                    "/api/payments/vnpay-notify/**",
+                    "/api/payments/return/**", 
+                    "/api/payments/cancel/**",
+                    "/api/payments/success/**"
+                ).permitAll()
                 // Public GETs for cards, listings and home endpoints
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/cards/**", "/api/listings/**", "/api/home/**").permitAll()
                 // all other requests require authentication

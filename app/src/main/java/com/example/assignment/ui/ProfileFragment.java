@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
         tvEmail = view.findViewById(R.id.tvProfEmail);
         tvPhone = view.findViewById(R.id.tvProfPhone);
         tvAddress = view.findViewById(R.id.tvProfAddress);
-    tvBalance = view.findViewById(R.id.tvProfBalance);
+        tvBalance = view.findViewById(R.id.tvProfBalance);
         btnEdit = view.findViewById(R.id.btnProfEdit);
         btnLogout = view.findViewById(R.id.btnLogout);
 

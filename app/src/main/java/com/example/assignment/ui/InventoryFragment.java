@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment.R;
+import com.example.assignment.data.model.MyCard;
 import com.example.assignment.data.model.MyOwnedCard;
 import com.example.assignment.data.repository.MyCardsRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -60,7 +62,7 @@ public class InventoryFragment extends Fragment {
     }
     private void showResellDialog(MyOwnedCard card) {
         View v = getLayoutInflater().inflate(R.layout.dialog_resell_card, null);
-        EditText etPrice = v.findViewById(R.id.etResellPrice);
+        EditText etPrice = v.findViewById(R.id.etNewPrice);
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle("Bán lại thẻ")
                 .setView(v)
@@ -79,7 +81,8 @@ public class InventoryFragment extends Fragment {
                         updateCard.setBaseImageUrl(card.getBaseImageUrl());
                         updateCard.setStatus("PENDING");
                         updateCard.setPrice(price);
-                        repo.updateMyCard(card.getId(), updateCard).enqueue(new Callback<MyCard>() {
+                        repo.updateMyCard(card.getId(), updateCard.getName(), updateCard.getRarity(),
+                                updateCard.getTeam(), updateCard.getDescription(), updateCard.getPrice(), null).enqueue(new Callback<MyCard>() {
                             @Override
                             public void onResponse(Call<MyCard> call, Response<MyCard> response) {
                                 if (response.isSuccessful()) loadOwnedCards();
@@ -97,18 +100,33 @@ public class InventoryFragment extends Fragment {
     }
 
     private void loadOwnedCards() {
-        repo.getOwnedCards().enqueue(new Callback<List<MyOwnedCard>>() {
+        repo.getOwnedCards().enqueue(new Callback<List<MyCard>>() {
             @Override
-            public void onResponse(Call<List<MyOwnedCard>> call, Response<List<MyOwnedCard>> response) {
+            public void onResponse(Call<List<MyCard>> call, Response<List<MyCard>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    adapter.setItems(response.body());
+                    // Convert MyCard to MyOwnedCard
+                    List<MyOwnedCard> ownedCards = new ArrayList<>();
+                    for (MyCard myCard : response.body()) {
+                        if ("SOLD".equalsIgnoreCase(myCard.getStatus()) || "APPROVED".equalsIgnoreCase(myCard.getStatus())) {
+                            MyOwnedCard ownedCard = new MyOwnedCard();
+                            ownedCard.setId(myCard.getId());
+                            ownedCard.setName(myCard.getName());
+                            ownedCard.setRarity(myCard.getRarity());
+                            ownedCard.setTeam(myCard.getTeam());
+                            ownedCard.setDescription(myCard.getDescription());
+                            ownedCard.setBaseImageUrl(myCard.getBaseImageUrl());
+                            ownedCard.setPrice(myCard.getPrice());
+                            ownedCards.add(ownedCard);
+                        }
+                    }
+                    adapter.setItems(ownedCards);
                 } else {
                     Toast.makeText(getContext(), "Failed to load inventory", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<MyOwnedCard>> call, Throwable t) {
+            public void onFailure(Call<List<MyCard>> call, Throwable t) {
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

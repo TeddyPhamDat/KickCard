@@ -67,4 +67,19 @@ public class RetrofitClient {
         Retrofit r = getClient(ctx, BASE_URL);
         return r.create(ApiService.class);
     }
+
+    public static RetrofitClient getInstance(String baseUrl) {
+        return new RetrofitClient();
+    }
+
+    public ApiService getApi() {
+        // This method is used by PaymentRepository
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit.create(ApiService.class);
+    }
 }

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -50,6 +52,36 @@
             android:name=".ui.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.KickCard" />
+
+        <activity
+            android:name=".ui.PaymentActivity"
+            android:exported="true"
+            android:theme="@style/Theme.KickCard">
+
+            <!-- Deep link intent filters for PayOS callbacks -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kickcard" android:host="payment" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.PaymentHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KickCard" />
+
+        <activity
+            android:name=".ui.PaymentStatusActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KickCard" />
+
+        <activity
+            android:name=".ui.TransactionHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KickCard"
+            android:label="Transaction History" />
     </application>
 
 </manifest>

@@ -77,16 +77,45 @@ public interface ApiService {
     Call<java.util.Map<String, java.util.List<com.example.assignment.data.model.MyCard>>> getMyCards(@Header("Authorization") String bearerToken);
 
     @GET("/api/my-cards/owned")
-    Call<java.util.List<com.example.assignment.data.model.MyOwnedCard>> getOwnedCards(@Header("Authorization") String bearerToken);
+    Call<java.util.List<com.example.assignment.data.model.MyCard>> getOwnedCards(@Header("Authorization") String bearerToken);
 
-    @POST("/api/my-cards")
-    Call<com.example.assignment.data.model.MyCard> createMyCard(@Header("Authorization") String bearerToken, @Body com.example.assignment.data.model.MyCard card);
+    @Multipart
+    @POST("/api/my-cards/with-image")
+    Call<com.example.assignment.data.model.MyCard> createMyCard(
+        @Header("Authorization") String bearerToken,
+        @Part("name") okhttp3.RequestBody name,
+        @Part("rarity") okhttp3.RequestBody rarity,
+        @Part("team") okhttp3.RequestBody team,
+        @Part("description") okhttp3.RequestBody description,
+        @Part("price") okhttp3.RequestBody price,
+        @Part okhttp3.MultipartBody.Part file
+    );
 
-    @PUT("/api/my-cards/{id}")
-    Call<com.example.assignment.data.model.MyCard> updateMyCard(@Header("Authorization") String bearerToken, @Path("id") Long id, @Body com.example.assignment.data.model.MyCard card);
+    @Multipart
+    @PUT("/api/my-cards/{id}/with-image")
+    Call<com.example.assignment.data.model.MyCard> updateMyCard(
+        @Header("Authorization") String bearerToken,
+        @Path("id") Long id,
+        @Part("name") okhttp3.RequestBody name,
+        @Part("rarity") okhttp3.RequestBody rarity,
+        @Part("team") okhttp3.RequestBody team,
+        @Part("description") okhttp3.RequestBody description,
+        @Part("price") okhttp3.RequestBody price,
+        @Part okhttp3.MultipartBody.Part file
+    );
 
     @DELETE("/api/my-cards/{id}")
     Call<java.util.Map<String, Boolean>> deleteMyCard(@Header("Authorization") String bearerToken, @Path("id") Long id);
+
+    // Resell endpoints
+    @POST("/api/my-cards/{id}/resell")
+    Call<java.util.Map<String, Object>> resellCard(@Header("Authorization") String bearerToken, @Path("id") Long id, @Body java.util.Map<String, Object> request);
+
+    @POST("/api/my-cards/{id}/retry-resell")
+    Call<java.util.Map<String, Object>> retryResell(@Header("Authorization") String bearerToken, @Path("id") Long id, @Body java.util.Map<String, Object> request);
+
+    @POST("/api/my-cards/{id}/cancel-resell")
+    Call<java.util.Map<String, Object>> cancelResell(@Header("Authorization") String bearerToken, @Path("id") Long id);
 
     // Admin endpoints (cards & users)
     @GET("/api/admin/cards/pending")
@@ -121,4 +150,34 @@ public interface ApiService {
 
     @DELETE("/api/admin/users/{id}")
     Call<java.util.Map<String, String>> adminDeleteUser(@Header("Authorization") String bearerToken, @Path("id") Long id);
+
+    // Payment endpoints
+    @POST("/api/payments/create")
+    Call<java.util.Map<String, Object>> createPayment(@Header("Authorization") String bearerToken, @Body com.example.assignment.data.model.CreatePaymentRequest request);
+
+    @POST("/api/payments/topup")
+    Call<java.util.Map<String, Object>> createWalletTopUp(@Header("Authorization") String bearerToken, @Body com.example.assignment.data.model.TopupRequest request);
+
+    @GET("/api/payments/{orderCode}")
+    Call<java.util.Map<String, Object>> getPayment(@Header("Authorization") String bearerToken, @Path("orderCode") String orderCode);
+
+    @GET("/api/payments/my-purchases")
+    Call<java.util.Map<String, Object>> getMyPurchases(@Header("Authorization") String bearerToken);
+
+    @GET("/api/payments/wallet-transactions")
+    Call<java.util.Map<String, Object>> getWalletTransactions(@Header("Authorization") String bearerToken);
+
+    // Commented out since PayOS endpoints are disabled
+    // @GET("/api/payments/my-topups")
+    // Call<java.util.Map<String, Object>> getMyTopups(@Header("Authorization") String bearerToken);
+
+    // Commented out since PayOS endpoints are disabled
+    // @GET("/api/payments/my-sales")
+    // Call<java.util.Map<String, Object>> getMySales(@Header("Authorization") String bearerToken);
+
+    // @GET("/api/payments/status/{orderCode}")
+    // Call<java.util.Map<String, Object>> checkPaymentStatus(@Header("Authorization") String bearerToken, @Path("orderCode") String orderCode);
+
+    // @POST("/api/payments/force-check/{orderCode}")
+    // Call<java.util.Map<String, Object>> forceCheckPayment(@Header("Authorization") String bearerToken, @Path("orderCode") String orderCode);
 }

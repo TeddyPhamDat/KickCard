@@ -10,4 +10,10 @@
     <color name="status_approved">#C8E6C9</color> <!-- Light Green -->
     <color name="status_pending">#FFF9C4</color>  <!-- Light Yellow -->
     <color name="status_rejected">#FFCDD2</color>  <!-- Light Red -->
+
+    <!-- Payment colors -->
+    <color name="colorPrimary">#FF6200EE</color>
+    <color name="colorAccent">#FF03DAC5</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorError">#F44336</color>
 </resources>

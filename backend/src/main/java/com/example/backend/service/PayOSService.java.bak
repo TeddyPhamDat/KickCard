@@ -1,0 +1,584 @@
+package com.example.backend.service;
+
+import com.example.backend.dto.PaymentResponse;
+import com.example.backend.model.Payment;
+import com.example.backend.repository.PaymentRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class PayOSService {
+
+    private final WebClient payOSWebClient;
+    private final PaymentRepository paymentRepository;
+    private final WalletService walletService;
+
+    @Value("${payos.checksum-key}")
+    private String checksumKey;
+
+    @Value("${payos.client-id}")
+    private String clientId;
+
+    @Value("${payos.api-key}")
+    private String apiKey;
+
+    @Value("${payos.return-url}")
+    private String returnUrl;
+
+    @Value("${payos.cancel-url}")
+    private String cancelUrl;
+
+    @Value("${payos.webhook-url}")
+    private String webhookUrl;
+
+    /**
+     * Tạo payment cho mua thẻ
+     */
+    public PaymentResponse createCardPayment(Long cardId, Double amount, String description, Long buyerId) throws Exception {
+        if (amount == null || amount <= 0) {
+            throw new Exception("Số tiền phải lớn hơn 0");
+        }
+
+        long orderCode = System.currentTimeMillis();
+
+        Map<String, Object> paymentData = new HashMap<>();
+        paymentData.put("orderCode", orderCode);
+        paymentData.put("amount", amount.intValue());
+        paymentData.put("description", description != null ? description : "Mua thẻ");
+        paymentData.put("returnUrl", returnUrl);
+        paymentData.put("cancelUrl", cancelUrl);
+
+        List<Map<String, Object>> items = new ArrayList<>();
+        Map<String, Object> item = new HashMap<>();
+        item.put("name", "Thẻ #" + cardId);
+        item.put("quantity", 1);
+        item.put("price", amount.intValue());
+        items.add(item);
+        paymentData.put("items", items);
+
+        // Thêm buyer info
+        Map<String, Object> buyerInfo = new HashMap<>();
+        buyerInfo.put("name", "KickCard User");
+        buyerInfo.put("email", "user@kickcard.com");
+        buyerInfo.put("phone", "0987654321");
+        buyerInfo.put("address", "Ha Noi, Viet Nam");
+        paymentData.put("buyerInfo", buyerInfo);
+
+        System.out.println("[PayOS] Creating card payment WITHOUT signature: " + paymentData);
+
+        Map<String, Object> response = callPayOSAPI(paymentData);
+        String checkoutUrl = extractCheckoutUrl(response);
+
+        // Tạo payment record
+        Payment payment = new Payment();
+        payment.setOrderCode(String.valueOf(orderCode));
+        payment.setAmount(amount);
+        payment.setDescription(description != null ? description : "Mua thẻ");
+        payment.setBuyerId(buyerId);
+        payment.setSellerId(0L); // System seller
+        payment.setCardId(cardId);
+        payment.setStatus("PENDING");
+        payment.setCreatedAt(LocalDateTime.now());
+        payment.setPaymentUrl(checkoutUrl);
+
+        Payment savedPayment = paymentRepository.save(payment);
+        System.out.println("[PayOS] ✓ Card payment created: " + savedPayment.getOrderCode());
+
+        return convertToResponse(savedPayment);
+    }
+
+    /**
+     * Tạo request nạp tiền vào ví qua PayOS (REST API) với timeout và logging chi tiết
+     */
+    public PaymentResponse createWalletTopUp(Double amount, Long userId) throws Exception {
+        if (amount == null || amount <= 0) {
+            throw new Exception("Số tiền nạp phải lớn hơn 0");
+        }
+        
+        // PayOS yêu cầu amount tối thiểu 1000 VND
+        if (amount < 1000) {
+            throw new Exception("Số tiền nạp tối thiểu là 1,000 VND");
+        }
+
+        // Tạo order code unique từ timestamp
+        long orderCode = System.currentTimeMillis();
+
+        // Thử format PayOS v2 với signature đúng chuẩn
+        Map<String, Object> paymentData = new HashMap<>();
+        paymentData.put("orderCode", orderCode);
+        paymentData.put("amount", amount.intValue());
+        paymentData.put("description", "Nap tien vao vi");
+        paymentData.put("returnUrl", returnUrl);
+        paymentData.put("cancelUrl", cancelUrl);
+        
+        // Thêm expiredAt
+        long expiredAt = System.currentTimeMillis() / 1000 + 15 * 60;
+        paymentData.put("expiredAt", (int) expiredAt);
+
+        // Items array
+        List<Map<String, Object>> items = new ArrayList<>();
+        Map<String, Object> item = new HashMap<>();
+        item.put("name", "Topup wallet");
+        item.put("quantity", 1);
+        item.put("price", amount.intValue());
+        items.add(item);
+        paymentData.put("items", items);
+
+        // THÊM SIGNATURE theo đúng PayOS v2 format
+        String signature = generatePayOSV2Signature(paymentData);
+        paymentData.put("signature", signature);
+
+        System.out.println("[PayOS] Creating payment data with CORRECT signature: " + paymentData);
+
+        // Gọi PayOS API - endpoint đúng là v2/payment-requests
+        Map<String, Object> response = null;
+        try {
+            java.time.Duration timeout = java.time.Duration.ofSeconds(15);
+            ResponseEntity<Map<String, Object>> respEntity = payOSWebClient.post()
+                    .uri("/v2/payment-requests") // Đúng endpoint
+                    .bodyValue(paymentData)
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+                    })
+                    .timeout(timeout)
+                    .block();
+
+            if (respEntity == null) {
+                throw new Exception("No response from PayOS (null)");
+            }
+
+            int status = respEntity.getStatusCode().value();
+            response = respEntity.getBody();
+
+            System.out.println("[PayOS] HTTP status: " + status);
+            System.out.println("[PayOS] Raw response body: " + response);
+
+            if (status < 200 || status >= 300) {
+                throw new Exception("PayOS HTTP error: status=" + status + ", body=" + response);
+            }
+
+        } catch (java.util.concurrent.TimeoutException te) {
+            System.err.println("[PayOS] Request timed out after 15s");
+            throw new Exception("PayOS request timed out after 15s", te);
+        } catch (Exception e) {
+            System.err.println("[PayOS] API Error: " + e.getMessage());
+            throw new Exception("Lỗi khi tạo payment link: " + e.getMessage(), e);
+        }
+
+        // PayOS may return codes like "00" (success) or "000" depending on API version.
+        String respCode = response == null ? null : String.valueOf(response.get("code"));
+        boolean okCode = "00".equals(respCode) || "000".equals(respCode) || "0".equals(respCode);
+        if (response == null || !okCode) {
+            throw new Exception("PayOS API error: " + (response != null ? response.get("desc") : "Unknown error"));
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> data = (Map<String, Object>) response.get("data");
+        String checkoutUrl = data != null ? String.valueOf(data.get("checkoutUrl")) : null;
+
+        System.out.println("[PayOS] ✓ Payment link created successfully!");
+        System.out.println("[PayOS] Checkout URL: " + checkoutUrl);
+
+        // Tạo payment record
+        Payment payment = new Payment();
+        payment.setOrderCode(String.valueOf(orderCode));
+        payment.setAmount(amount);
+        payment.setDescription("Nạp tiền vào ví");
+        payment.setBuyerId(userId);
+        payment.setSellerId(userId);
+        payment.setCardId(0L);
+        payment.setStatus("PENDING");
+        payment.setCreatedAt(LocalDateTime.now());
+        payment.setPaymentUrl(checkoutUrl);
+
+        // Lưu payment record vào database
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return convertToResponse(savedPayment);
+    }
+
+    /**
+     * Xử lý webhook từ PayOS cho tất cả loại payment
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public void handlePaymentWebhook(Map<String, Object> webhookData) throws Exception {
+        try {
+            System.out.println("=== PAYOS SERVICE WEBHOOK HANDLER ===");
+            System.out.println("[PayOS Webhook] Full webhook data: " + webhookData);
+            System.out.println("[PayOS Webhook] Webhook data keys: " + webhookData.keySet());
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> data = (Map<String, Object>) webhookData.get("data");
+
+            if (data == null) {
+                System.err.println("[PayOS Webhook] ERROR: 'data' field is null!");
+                System.err.println("[PayOS Webhook] Available fields: " + webhookData.keySet());
+                throw new Exception("Webhook data field is null - available fields: " + webhookData.keySet());
+            }
+
+            System.out.println("[PayOS Webhook] Data content: " + data);
+            System.out.println("[PayOS Webhook] Data keys: " + data.keySet());
+
+            String orderCode = String.valueOf(data.get("orderCode"));
+            String status = (String) data.get("status");
+            Object amount = data.get("amount");
+            Object transactionId = data.get("transactionId");
+
+            System.out.println("[PayOS Webhook] ===== PROCESSING =====");
+            System.out.println("[PayOS Webhook] Order Code: " + orderCode);
+            System.out.println("[PayOS Webhook] Status: " + status);
+            System.out.println("[PayOS Webhook] Amount: " + amount);
+            System.out.println("[PayOS Webhook] Transaction ID: " + transactionId);
+
+            Optional<Payment> paymentOpt = paymentRepository.findByOrderCode(orderCode);
+            if (paymentOpt.isEmpty()) {
+                throw new Exception("Payment not found: " + orderCode);
+            }
+
+            Payment payment = paymentOpt.get();
+
+            if ("PAID".equals(payment.getStatus())) {
+                System.out.println("[PayOS Webhook] Payment already processed: " + orderCode);
+                return;
+            }
+
+            if ("PAID".equals(status) || "PROCESSING".equals(status)) {
+                payment.setStatus("PAID");
+
+                Object transactionIdObj = data.get("transactionId");
+                if (transactionIdObj != null) {
+                    payment.setPayOSTransactionId(String.valueOf(transactionIdObj));
+                }
+
+                payment.setPaidAt(LocalDateTime.now());
+                paymentRepository.save(payment);
+
+                // Nếu là topup wallet (cardId == 0), cộng balance vào wallet
+                if (payment.getCardId() == 0 || payment.getCardId() == null) {
+                    walletService.addBalance(payment.getBuyerId(), payment.getAmount());
+                    System.out.println("[PayOS Webhook] ✓ Wallet topped up: " + payment.getAmount());
+                }
+                // Nếu là mua thẻ, xử lý khác (có thể cộng thẻ vào inventory)
+
+                System.out.println("[PayOS Webhook] ✓ Payment marked as PAID");
+            } else if ("CANCELLED".equals(status)) {
+                payment.setStatus("CANCELLED");
+                paymentRepository.save(payment);
+                System.out.println("[PayOS Webhook] Payment cancelled: " + orderCode);
+            }
+
+        } catch (Exception e) {
+            System.err.println("[PayOS Webhook] Error: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /**
+     * Xử lý webhook từ PayOS (old method - untuk backward compatibility)
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public void handleWalletTopUpWebhook(Map<String, Object> webhookData) throws Exception {
+        // Just call the new method
+        handlePaymentWebhook(webhookData);
+    }
+
+    /**
+     * Lấy thông tin payment theo order code
+     */
+    public PaymentResponse getPayment(String orderCode) throws Exception {
+        Payment payment = paymentRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new Exception("Payment not found"));
+        return convertToResponse(payment);
+    }
+
+    /**
+     * Lấy danh sách payment của user
+     */
+    public List<PaymentResponse> getUserPayments(Long userId) {
+        List<Payment> payments = paymentRepository.findByBuyerId(userId);
+        return payments.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Lấy danh sách nạp tiền của user
+     */
+    public List<PaymentResponse> getUserTopUps(Long userId) {
+        List<Payment> payments = paymentRepository.findByBuyerId(userId);
+        return payments.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // ===== Helper Methods =====
+
+    /**
+     * Gọi PayOS API với timeout và error handling
+     */
+    private Map<String, Object> callPayOSAPI(Map<String, Object> paymentData) throws Exception {
+        try {
+            java.time.Duration timeout = java.time.Duration.ofSeconds(15);
+            ResponseEntity<Map<String, Object>> respEntity = payOSWebClient.post()
+                    .uri("/v2/payment-requests")
+                    .bodyValue(paymentData)
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .timeout(timeout)
+                    .block();
+
+            if (respEntity == null) {
+                throw new Exception("No response from PayOS (null)");
+            }
+
+            int status = respEntity.getStatusCode().value();
+            Map<String, Object> response = respEntity.getBody();
+
+            System.out.println("[PayOS] HTTP status: " + status);
+            System.out.println("[PayOS] Response: " + response);
+
+            if (status < 200 || status >= 300) {
+                throw new Exception("PayOS HTTP error: status=" + status + ", body=" + response);
+            }
+
+            String respCode = response == null ? null : String.valueOf(response.get("code"));
+            boolean okCode = "00".equals(respCode) || "000".equals(respCode) || "0".equals(respCode);
+            if (response == null || !okCode) {
+                throw new Exception("PayOS API error: " + (response != null ? response.get("desc") : "Unknown error"));
+            }
+
+            return response;
+
+        } catch (java.util.concurrent.TimeoutException te) {
+            System.err.println("[PayOS] Request timed out after 15s");
+            throw new Exception("PayOS request timed out after 15s", te);
+        } catch (Exception e) {
+            System.err.println("[PayOS] API Error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
+     * Extract checkoutUrl from PayOS response
+     */
+    private String extractCheckoutUrl(Map<String, Object> response) throws Exception {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> data = (Map<String, Object>) response.get("data");
+        if (data == null) {
+            throw new Exception("PayOS response data is null");
+        }
+        String checkoutUrl = String.valueOf(data.get("checkoutUrl"));
+        if (checkoutUrl == null || checkoutUrl.isEmpty() || "null".equals(checkoutUrl)) {
+            throw new Exception("PayOS checkoutUrl is null");
+        }
+        System.out.println("[PayOS] Checkout URL: " + checkoutUrl);
+        return checkoutUrl;
+    }
+
+    /**
+     * Tạo signature cho payment request theo đúng format PayOS v2
+     * Thử format khác: orderCode&amount&description&returnUrl&cancelUrl
+     */
+    private String generateSignature(Map<String, Object> data) {
+        try {
+            // Thử format khác theo một số documentation PayOS
+            String orderCode = String.valueOf(data.get("orderCode"));
+            String amount = String.valueOf(data.get("amount"));
+            String description = String.valueOf(data.get("description"));
+            String returnUrl = String.valueOf(data.get("returnUrl"));
+            String cancelUrl = String.valueOf(data.get("cancelUrl"));
+            
+            // Format 1: orderCode&amount&description&returnUrl&cancelUrl
+            String signatureString = orderCode + "&" + amount + "&" + description + "&" + returnUrl + "&" + cancelUrl;
+            
+            System.out.println("[PayOS] Raw data for signature:");
+            System.out.println("  orderCode: " + orderCode);
+            System.out.println("  amount: " + amount);
+            System.out.println("  description: " + description);
+            System.out.println("  returnUrl: " + returnUrl);
+            System.out.println("  cancelUrl: " + cancelUrl);
+            System.out.println("[PayOS] Signature string (format 1): " + signatureString);
+            System.out.println("[PayOS] Checksum key: " + checksumKey.substring(0, 10) + "...");
+
+            // Generate HMAC SHA256
+            Mac hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(checksumKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            hmac.init(secretKey);
+            byte[] hash = hmac.doFinal(signatureString.getBytes(StandardCharsets.UTF_8));
+
+            // Convert to lowercase hex (PayOS yêu cầu lowercase)
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            String signature = hexString.toString().toLowerCase();
+            System.out.println("[PayOS] Generated signature: " + signature);
+            
+            return signature;
+            
+        } catch (Exception e) {
+            System.err.println("[PayOS] Error generating signature: " + e.getMessage());
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * Verify webhook signature
+     */
+    private String generateWebhookSignature(Map<String, Object> data) {
+        try {
+            StringBuilder dataStr = new StringBuilder();
+            dataStr.append("amount=").append(data.get("amount"))
+                   .append("&code=").append(data.get("code"))
+                   .append("&desc=").append(data.get("desc"))
+                   .append("&orderCode=").append(data.get("orderCode"))
+                   .append("&status=").append(data.get("status"));
+
+            Mac hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(checksumKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            hmac.init(secretKey);
+            byte[] hash = hmac.doFinal(dataStr.toString().getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (Exception e) {
+            System.err.println("[PayOS] Error generating webhook signature: " + e.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * Check payment status với PayOS API thật và cập nhật database
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public PaymentResponse checkPaymentWithPayOSAPI(String orderCode) throws Exception {
+        try {
+            System.out.println("[PayOS API Check] Checking payment status for order: " + orderCode);
+            
+            // Lấy payment từ database trước
+            Payment payment = paymentRepository.findByOrderCode(orderCode)
+                    .orElseThrow(() -> new Exception("Payment not found: " + orderCode));
+            
+            // Nếu đã PAID rồi thì không cần check nữa
+            if ("PAID".equals(payment.getStatus())) {
+                System.out.println("[PayOS API Check] Payment already PAID, returning current status");
+                return convertToResponse(payment);
+            }
+
+            // Call PayOS API để check status thực tế
+            // URL: GET https://api-merchant.payos.vn/v2/payment-requests/{orderCode}
+            String payosApiUrl = "https://api-merchant.payos.vn/v2/payment-requests/" + orderCode;
+            
+            System.out.println("[PayOS API Check] Calling PayOS API: " + payosApiUrl);
+            
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("x-client-id", clientId);
+            headers.set("x-api-key", apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            
+            try {
+                ResponseEntity<Map> response = restTemplate.exchange(
+                    payosApiUrl,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+                );
+                
+                System.out.println("[PayOS API Check] PayOS API response: " + response.getBody());
+                
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    Map<String, Object> responseBody = response.getBody();
+                    Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+                    
+                    if (data != null) {
+                        String payosStatus = (String) data.get("status");
+                        System.out.println("[PayOS API Check] PayOS status: " + payosStatus);
+                        
+                        // Nếu PayOS báo PAID/PROCESSING thì cập nhật database
+                        if ("PAID".equals(payosStatus) || "PROCESSING".equals(payosStatus)) {
+                            System.out.println("[PayOS API Check] Payment confirmed as PAID, updating database...");
+                            
+                            payment.setStatus("PAID");
+                            payment.setPaidAt(java.time.LocalDateTime.now());
+                            
+                            // Lấy transaction ID nếu có
+                            Object transactionId = data.get("transactionId");
+                            if (transactionId != null) {
+                                payment.setPayOSTransactionId(String.valueOf(transactionId));
+                            }
+                            
+                            paymentRepository.save(payment);
+                            
+                            // Nếu là topup wallet, cộng balance
+                            if (payment.getCardId() == null || payment.getCardId() == 0) {
+                                walletService.addBalance(payment.getBuyerId(), payment.getAmount());
+                                System.out.println("[PayOS API Check] ✓ Wallet balance updated: +" + payment.getAmount());
+                            }
+                            
+                            System.out.println("[PayOS API Check] ✓ Payment updated to PAID successfully");
+                        }
+                        else if ("CANCELLED".equals(payosStatus)) {
+                            payment.setStatus("CANCELLED");
+                            paymentRepository.save(payment);
+                            System.out.println("[PayOS API Check] Payment marked as CANCELLED");
+                        }
+                    }
+                }
+                
+            } catch (Exception apiException) {
+                System.err.println("[PayOS API Check] Error calling PayOS API: " + apiException.getMessage());
+                // Không throw exception, vẫn return status hiện tại
+            }
+            
+            return convertToResponse(payment);
+            
+        } catch (Exception e) {
+            System.err.println("[PayOS API Check] Error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    private PaymentResponse convertToResponse(Payment payment) {
+        return new PaymentResponse(
+                payment.getId(),
+                payment.getOrderCode(),
+                payment.getAmount(),
+                payment.getDescription(),
+                payment.getBuyerId(),
+                payment.getSellerId(),
+                payment.getCardId(),
+                payment.getStatus(),
+                payment.getPaymentUrl(),
+                payment.getCreatedAt(),
+                payment.getPaidAt()
+        );
+    }
+}
+

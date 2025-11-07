@@ -39,8 +39,8 @@ public class WalletController {
         ));
     }
 
-    @PostMapping("/topup")
-    public ResponseEntity<?> topUp(@RequestBody Map<String, Double> request) {
+    @PostMapping("/topup-fake")  // For testing/demo only - direct balance credit
+    public ResponseEntity<?> fakeTopUp(@RequestBody Map<String, Double> request) {
         User user = getCurrentUser();
         if (user == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));

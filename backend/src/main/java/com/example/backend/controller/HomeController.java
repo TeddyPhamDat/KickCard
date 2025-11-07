@@ -86,7 +86,7 @@ public class HomeController {
     ) {
         // Chỉ hiển thị thẻ APPROVED (có thể mua)
         List<Card> approvedCards = cardRepository.findByStatus("APPROVED");
-        
+
         return approvedCards.stream()
                 .filter(card -> {
                     // Filter by name
@@ -95,34 +95,34 @@ public class HomeController {
                             return false;
                         }
                     }
-                    
+
                     // Filter by rarity
                     if (rarity != null && !rarity.trim().isEmpty()) {
                         if (card.getRarity() == null || !card.getRarity().equalsIgnoreCase(rarity)) {
                             return false;
                         }
                     }
-                    
+
                     // Filter by team
                     if (team != null && !team.trim().isEmpty()) {
                         if (card.getTeam() == null || !card.getTeam().equalsIgnoreCase(team)) {
                             return false;
                         }
                     }
-                    
+
                     // Filter by price range
                     if (minPrice != null) {
                         if (card.getPrice() == null || card.getPrice() < minPrice) {
                             return false;
                         }
                     }
-                    
+
                     if (maxPrice != null) {
                         if (card.getPrice() == null || card.getPrice() > maxPrice) {
                             return false;
                         }
                     }
-                    
+
                     return true;
                 })
                 .collect(Collectors.toList());
@@ -133,3 +133,5 @@ public class HomeController {
         return cardRepository.findById(id).orElse(null);
     }
 }
+
+

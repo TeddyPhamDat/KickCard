@@ -8,6 +8,7 @@ public class MyOwnedCard {
     private String description;
     private String baseImageUrl;
     private String status; // APPROVED, SOLD
+    private String rejectionReason;
     private Double price;
     private String ownerUsername;
 
@@ -25,6 +26,8 @@ public class MyOwnedCard {
     public void setBaseImageUrl(String baseImageUrl) { this.baseImageUrl = baseImageUrl; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
     public String getOwnerUsername() { return ownerUsername; }

@@ -64,6 +64,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Rejected" />
+
+        <Button
+            android:id="@+id/btnSold"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sold" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <!-- Listings RecyclerView -->
