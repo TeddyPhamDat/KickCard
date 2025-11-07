@@ -3,15 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardElevation="4dp">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardElevation="3dp"
+    app:cardCornerRadius="12dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0"
+    android:backgroundTint="@color/admin_card_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
+        <!-- Header with Status Badge -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,74 +27,127 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/tvInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚽"
+                android:textSize="24sp"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Card info"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:background="@android:drawable/btn_default_small"
-                android:text="PENDING"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:background="@drawable/status_badge_pending"
+                    android:text="PENDING"
+                    android:textColor="@color/text_white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:elevation="2dp" />
+            </LinearLayout>
         </LinearLayout>
 
+        <!-- Card Image Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardImageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E0E0E0">
+
+            <ImageView
+                android:id="@+id/ivCardImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Card Image"
+                android:background="#F5F5F5" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card Info Section -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="#E0E0E0" />
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Card info"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             android:gravity="end">
 
             <ImageButton
                 android:id="@+id/btnApprove"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="Approve"
                 android:src="@drawable/ic_approve"
-                android:backgroundTint="?attr/colorPrimary"
-                android:tint="#7C4DFF"
+                android:tint="@color/text_white"
                 android:scaleType="centerInside"
-                android:background="@drawable/rounded_icon_bg" />
+                android:background="@drawable/btn_action_approve"
+                android:elevation="2dp"
+                android:layout_marginEnd="8dp" />
 
             <ImageButton
                 android:id="@+id/btnReject"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="Reject"
                 android:src="@drawable/ic_reject"
-                android:tint="#FFFFFF"
+                android:tint="@color/text_white"
                 android:scaleType="centerInside"
-                android:background="@drawable/rounded_red_bg" />
+                android:background="@drawable/btn_action_reject"
+                android:elevation="2dp"
+                android:layout_marginEnd="8dp" />
 
             <ImageButton
                 android:id="@+id/btnEdit"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="Edit"
                 android:src="@drawable/ic_edit"
-                android:tint="#9E9E9E"
+                android:tint="@color/text_white"
                 android:scaleType="centerInside"
-                android:background="@drawable/rounded_gray_bg" />
+                android:background="@drawable/btn_action_edit"
+                android:elevation="2dp"
+                android:layout_marginEnd="8dp" />
 
             <ImageButton
                 android:id="@+id/btnDelete"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="Delete"
                 android:src="@drawable/ic_delete_material"
-                android:tint="#9E9E9E"
+                android:tint="@color/text_white"
                 android:scaleType="centerInside"
-                android:background="@drawable/rounded_gray_bg" />
+                android:background="@drawable/btn_action_delete"
+                android:elevation="2dp" />
 
         </LinearLayout>
 

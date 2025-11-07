@@ -109,15 +109,26 @@ public class CardDetailFragment extends Fragment {
     }
 
     private void bindData(Card card) {
-        // Use Glide (which is in your project) to load the image
+        if (!isAdded() || getContext() == null) return;
+        
+        // Use Glide to load the image
         Glide.with(this)
                 .load(card.getBaseImageUrl())
                 .placeholder(R.drawable.ic_soccer_ball)
+                .error(R.drawable.ic_soccer_ball)
+                .centerCrop()
                 .into(imgCard);
 
         // Set the text for the main info
         tvCardName.setText(card.getName());
-        tvCardRarity.setText(card.getRarity());
+        
+        // Rarity with uppercase
+        String rarity = card.getRarity();
+        if (rarity != null && !rarity.isEmpty()) {
+            tvCardRarity.setText(rarity.toUpperCase());
+        } else {
+            tvCardRarity.setText("COMMON");
+        }
 
         // Set text for the details card
         tvCardStatus.setText(card.getStatus() != null ? card.getStatus().toUpperCase() : "N/A");

@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <!-- Thumbnail: Using a fixed size similar to item_my_card.xml -->
-        <ImageView
-            android:id="@+id/imgThumb"
-            android:layout_width="80dp"
-            android:layout_height="100dp"
-            android:contentDescription="Card Thumbnail"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/ic_launcher_background" />
+        <!-- Card Image with Frame -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:strokeColor="@color/stadium_green"
+            app:strokeWidth="2dp">
 
-        <!-- Info Section: Vertical LinearLayout to hold texts -->
+            <ImageView
+                android:id="@+id/imgThumb"
+                android:layout_width="80dp"
+                android:layout_height="110dp"
+                android:contentDescription="Card Thumbnail"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/ic_launcher_background" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Info Section -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -35,18 +47,53 @@
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:maxLines="2"
+                android:ellipsize="end"
                 tools:text="Lionel Messi" />
 
-            <!-- Rarity -->
+            <!-- Rarity Badge -->
             <TextView
                 android:id="@+id/tvRarity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                tools:text="Legendary" />
+                android:layout_marginTop="4dp"
+                android:textSize="12sp"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp"
+                android:background="@drawable/status_badge_approved"
+                android:textColor="@color/approved_green"
+                android:textStyle="bold"
+                tools:text="LEGENDARY" />
+
+            <!-- Owner Info -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_profile"
+                    android:contentDescription="Owner"
+                    android:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/tvOwner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    tools:text="Owner: John Doe" />
+            </LinearLayout>
 
             <!-- Price -->
             <TextView
@@ -54,8 +101,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textAppearance="?attr/textAppearanceTitleSmall"
-                android:textColor="?attr/colorPrimary"
+                android:textSize="16sp"
+                android:textColor="@color/bright_green"
                 android:textStyle="bold"
                 tools:text="VND 5,000,000" />
         </LinearLayout>
@@ -63,10 +110,14 @@
         <!-- View Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnView"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View" />
+            android:layout_gravity="center_vertical"
+            android:text="View"
+            app:icon="@drawable/ic_cards"
+            app:iconGravity="textStart"
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 

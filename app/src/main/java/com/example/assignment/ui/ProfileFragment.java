@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import com.bumptech.glide.Glide;
 import com.example.assignment.R;
 import com.example.assignment.auth.login.LoginActivity;
 import com.example.assignment.data.api.ApiService;
@@ -27,6 +29,7 @@ import retrofit2.Response;
 public class ProfileFragment extends Fragment {
     private TextView tvName, tvEmail, tvPhone, tvAddress;
     private TextView tvBalance;
+    private ImageView imgProfileAvatar;
     private Button btnEdit, btnLogout;
 
     @Nullable
@@ -43,6 +46,7 @@ public class ProfileFragment extends Fragment {
         tvPhone = view.findViewById(R.id.tvProfPhone);
         tvAddress = view.findViewById(R.id.tvProfAddress);
         tvBalance = view.findViewById(R.id.tvProfBalance);
+        imgProfileAvatar = view.findViewById(R.id.imgProfileAvatar);
         btnEdit = view.findViewById(R.id.btnProfEdit);
         btnLogout = view.findViewById(R.id.btnLogout);
 
@@ -129,6 +133,23 @@ public class ProfileFragment extends Fragment {
         tvEmail.setText(user.getEmail() != null ? user.getEmail() : "No email");
         tvPhone.setText(user.getPhone() != null ? user.getPhone() : "No phone");
         tvAddress.setText(user.getAddress() != null ? user.getAddress() : "No address");
+        
+        // Load avatar
+        if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+            String imageUrl = user.getAvatarUrl();
+            if (!imageUrl.startsWith("http")) {
+                imageUrl = "http://10.0.2.2:8080" + (imageUrl.startsWith("/") ? "" : "/") + imageUrl;
+            }
+            Glide.with(this)
+                    .load(imageUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(imgProfileAvatar);
+        } else {
+            imgProfileAvatar.setImageResource(R.drawable.ic_person);
+        }
+        
         // show cached balance if available
         SessionManager s = new SessionManager(getContext());
         Double bal = s.getWalletBalance();

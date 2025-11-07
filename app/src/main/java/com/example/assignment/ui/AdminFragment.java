@@ -78,7 +78,8 @@ public class AdminFragment extends Fragment {
     }
 
     private void openAdminInventory() {
-        // Replace fragment with InventoryFragment for admin
+        // Replace fragment with InventoryFragment - admin cũng chỉ xem thẻ OWNED của mình
+        // Admin cũng có thể mua/bán thẻ và nhận 5% hoa hồng
         requireActivity().getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.fragmentContainer, new InventoryFragment())

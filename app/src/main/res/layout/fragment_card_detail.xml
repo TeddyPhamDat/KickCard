@@ -1,202 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/admin_background"
     tools:context=".ui.CardDetailFragment">
 
-    <!-- Background -->
-    <ImageView
-        android:id="@+id/ivBackground"
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.1"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_soccer_stadium_background"
-        tools:ignore="ContentDescription" />
+        android:fillViewport="false"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
+        android:scrollbars="vertical">
 
-    <!-- Scrollable content -->
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="32dp">
 
-            <!-- Main Card Image -->
+            <!-- Main Card Image with Stadium Theme -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/imageCardContainer"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="64dp"
-                android:layout_marginEnd="64dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:layout_constraintDimensionRatio="3:4.5"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="12dp"
+                app:strokeColor="@color/card_gold"
+                app:strokeWidth="3dp">
 
                 <ImageView
                     android:id="@+id/imgCard"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="400dp"
                     android:scaleType="centerCrop"
+                    android:contentDescription="Card Image"
                     tools:src="@drawable/ic_soccer_ball" />
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Main Info: Name and Rarity -->
             <TextView
                 android:id="@+id/tvCardName"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:gravity="center_horizontal"
-                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:gravity="center"
+                android:textSize="28sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageCardContainer"
+                android:textColor="@color/stadium_green"
+                android:maxLines="2"
+                android:ellipsize="end"
                 tools:text="Lionel Messi" />
 
-            <TextView
-                android:id="@+id/tvCardRarity"
+            <!-- Rarity Badge -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCardName"
-                tools:text="Legendary" />
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/status_badge_approved"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-            <!-- Details Card -->
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_cards"
+                    android:tint="@color/card_gold"
+                    android:layout_marginEnd="6dp"
+                    android:contentDescription="Rarity Icon" />
+
+                <TextView
+                    android:id="@+id/tvCardRarity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/card_gold"
+                    tools:text="LEGENDARY" />
+            </LinearLayout>
+
+            <!-- Details Card with Stadium Theme -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/detailsCard"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCardRarity">
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/pitch_green"
+                app:strokeWidth="1dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp">
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:background="@drawable/header_football_gradient"
+                    android:backgroundTint="#E8F5E9">
 
-                    <TextView
-                        android:id="@+id/tvStatusLabel"
-                        android:layout_width="wrap_content"
+                    <!-- Status Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Status"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/tvCardStatus"
-                        android:layout_width="wrap_content"
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_admin"
+                            android:tint="@color/stadium_green"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Status Icon" />
+
+                        <TextView
+                            android:id="@+id/tvStatusLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Status"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvCardStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/approved_green"
+                            tools:text="APPROVED" />
+                    </LinearLayout>
+
+                    <!-- Owner Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvStatusLabel"
-                        tools:text="APPROVED" />
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/tvOwnerLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Current Owner"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_profile"
+                            android:tint="@color/stadium_green"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Owner Icon" />
 
-                    <TextView
-                        android:id="@+id/tvCardOwner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvOwnerLabel"
-                        tools:text="collector123" />
+                        <TextView
+                            android:id="@+id/tvOwnerLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Seller"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary" />
 
+                        <TextView
+                            android:id="@+id/tvCardOwner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            tools:text="collector123" />
+                    </LinearLayout>
+
+                    <!-- Divider -->
                     <View
-                        android:id="@+id/divider"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        android:background="?attr/colorOutlineVariant"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvOwnerLabel" />
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="@color/pitch_green"
+                        android:alpha="0.3" />
 
-                    <TextView
-                        android:id="@+id/tvPriceLabel"
-                        android:layout_width="wrap_content"
+                    <!-- Price Section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Price"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/divider" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/tvCardPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                        android:textColor="?attr/colorPrimary"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvPriceLabel"
-                        tools:text="VND 5,000,000" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_wallet"
+                            android:tint="@color/card_gold"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Price Icon" />
+
+                        <TextView
+                            android:id="@+id/tvPriceLabel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Price"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/stadium_green" />
+
+                        <TextView
+                            android:id="@+id/tvCardPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:textColor="@color/bright_green"
+                            android:textStyle="bold"
+                            tools:text="VND 5,000,000" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Rejection Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/rejectionCard"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="?attr/colorErrorContainer"
-                app:cardCornerRadius="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/detailsCard"
+                app:cardBackgroundColor="@color/rejected_red_light"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/rejected_red"
+                app:strokeWidth="2dp"
                 tools:visibility="visible">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Rejection Reason"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnErrorContainer"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_admin"
+                            android:tint="@color/rejected_red"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Rejection Icon" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚠️ Rejection Reason"
+                            android:textSize="16sp"
+                            android:textColor="@color/rejected_red"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/tvCardRejectionReason"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="?attr/colorOnErrorContainer"
+                        android:layout_marginTop="12dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
                         tools:text="Image quality is too low." />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -204,33 +279,32 @@
             <!-- Purchase Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBuy"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
-                android:paddingVertical="14dp"
-                android:text="Purchase Card"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rejectionCard" />
+                android:paddingVertical="16dp"
+                android:text="⚽ BUY NOW"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/stadium_green"
+                app:icon="@drawable/ic_wallet"
+                app:iconGravity="textStart"
+                app:iconTint="@color/card_gold"
+                app:cornerRadius="12dp"
+                app:elevation="6dp" />
 
             <!-- Progress Bar -->
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:elevation="8dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="24dp"
                 android:indeterminate="true"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/btnBuy"
-                app:layout_constraintEnd_toEndOf="@+id/btnBuy"
-                app:layout_constraintStart_toStartOf="@+id/btnBuy"
-                app:layout_constraintTop_toTopOf="@+id/btnBuy"
                 tools:visibility="visible" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

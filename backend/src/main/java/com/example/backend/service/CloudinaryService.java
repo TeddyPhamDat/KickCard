@@ -39,16 +39,13 @@ public class CloudinaryService {
             throw new IllegalArgumentException("File không được để trống");
         }
 
+        // Upload without transformation - Cloudinary will store original
+        // You can apply transformation on the fly via URL if needed
         Map<String, Object> uploadResult = cloudinary.uploader().upload(
             file.getBytes(),
             ObjectUtils.asMap(
                 "folder", "kickcard/avatars",
-                "resource_type", "image",
-                "transformation", ObjectUtils.asMap(
-                    "width", 200,
-                    "height", 200,
-                    "crop", "fill"
-                )
+                "resource_type", "image"
             )
         );
 

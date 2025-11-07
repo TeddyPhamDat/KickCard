@@ -3,21 +3,21 @@
     <item
         android:id="@+id/menu_home"
         android:title="Home"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@drawable/ic_home" />
     <item
         android:id="@+id/menu_my_cards"
         android:title="My Cards"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@drawable/ic_cards" />
     <item
         android:id="@+id/menu_admin"
         android:title="Admin"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@drawable/ic_admin" />
     <item
         android:id="@+id/menu_wallet"
         android:title="Wallet"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@drawable/ic_wallet" />
     <item
         android:id="@+id/menu_profile"
         android:title="Profile"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@drawable/ic_profile" />
 </menu>

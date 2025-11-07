@@ -44,9 +44,28 @@ public class HomeListingAdapter extends RecyclerView.Adapter<HomeListingAdapter.
         HomeListing l = items.get(position);
 
         holder.tvName.setText(l.getCardName());
-        holder.tvRarity.setText(l.getRarity());
+        
+        // Rarity with uppercase
+        String rarity = l.getRarity();
+        if (rarity != null) {
+            holder.tvRarity.setText(rarity.toUpperCase());
+        } else {
+            holder.tvRarity.setText("COMMON");
+        }
+        
+        // Owner info
+        String ownerName = l.getOwnerName();
+        if (ownerName != null && !ownerName.isEmpty()) {
+            holder.tvOwner.setText("Owner: " + ownerName);
+            holder.tvOwner.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvOwner.setVisibility(View.GONE);
+        }
+        
+        // Price formatting
         holder.tvPrice.setText(String.format("VND %,.0f", l.getPrice()));
 
+        // Image loading
         String imageUrl = l.getImage();
         if (imageUrl != null && !imageUrl.startsWith("http")) {
             imageUrl = BASE_URL + imageUrl;
@@ -81,7 +100,7 @@ public class HomeListingAdapter extends RecyclerView.Adapter<HomeListingAdapter.
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView imgThumb;
-        TextView tvName, tvRarity, tvPrice;
+        TextView tvName, tvRarity, tvOwner, tvPrice;
         MaterialButton btnView;
 
         public VH(@NonNull View itemView) {
@@ -89,6 +108,7 @@ public class HomeListingAdapter extends RecyclerView.Adapter<HomeListingAdapter.
             imgThumb = itemView.findViewById(R.id.imgThumb);
             tvName = itemView.findViewById(R.id.tvName);
             tvRarity = itemView.findViewById(R.id.tvRarity);
+            tvOwner = itemView.findViewById(R.id.tvOwner);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             btnView = itemView.findViewById(R.id.btnView);
         }

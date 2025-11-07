@@ -16,4 +16,41 @@
     <color name="colorAccent">#FF03DAC5</color>
     <color name="colorSuccess">#4CAF50</color>
     <color name="colorError">#F44336</color>
+    
+    <!-- Football Card Trading Theme Colors -->
+    <color name="card_gold">#FFD700</color>
+    <color name="card_silver">#C0C0C0</color>
+    <color name="card_bronze">#CD7F32</color>
+    <color name="stadium_green">#1B5E20</color>
+    <color name="pitch_green">#2E7D32</color>
+    <color name="bright_green">#4CAF50</color>
+    
+    <!-- Admin Theme Colors -->
+    <color name="admin_primary">#1A237E</color>
+    <color name="admin_primary_dark">#0D1642</color>
+    <color name="admin_accent">#00B0FF</color>
+    <color name="admin_background">#F5F7FA</color>
+    <color name="admin_card_bg">#FFFFFF</color>
+    <color name="admin_header_gradient_start">#1565C0</color>
+    <color name="admin_header_gradient_end">#0D47A1</color>
+    
+    <!-- Status Colors Enhanced -->
+    <color name="approved_green">#4CAF50</color>
+    <color name="approved_green_light">#81C784</color>
+    <color name="pending_orange">#FF9800</color>
+    <color name="pending_orange_light">#FFB74D</color>
+    <color name="rejected_red">#F44336</color>
+    <color name="rejected_red_light">#E57373</color>
+    
+    <!-- Button Colors -->
+    <color name="btn_approve">#4CAF50</color>
+    <color name="btn_reject">#F44336</color>
+    <color name="btn_edit">#2196F3</color>
+    <color name="btn_delete">#FF5722</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="text_white">#FFFFFF</color>
 </resources>

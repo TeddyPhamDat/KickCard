@@ -60,7 +60,21 @@ public class HomeFragment extends Fragment {
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
 
+        // Search button click
         btnSearch.setOnClickListener(v -> doSearch());
+
+        // Enter key on name field
+        etName.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH) {
+                doSearch();
+                // Hide keyboard
+                android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) 
+                    requireActivity().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                return true;
+            }
+            return false;
+        });
 
         swipeRefresh.setOnRefreshListener(() -> doSearch());
 
@@ -69,43 +83,89 @@ public class HomeFragment extends Fragment {
     }
 
     private void doSearch() {
+        if (!isAdded() || getContext() == null) return;
+        
         String name = etName.getText().toString().trim();
         Double min = null;
         Double max = null;
+        
+        // Parse min price
         try {
             String smin = etMinPrice.getText().toString().trim();
-            if (!smin.isEmpty()) min = Double.parseDouble(smin);
-        } catch (NumberFormatException ignored) {}
+            if (!smin.isEmpty()) {
+                min = Double.parseDouble(smin);
+                if (min < 0) {
+                    Toast.makeText(getContext(), "Giá tối thiểu phải >= 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Giá tối thiểu không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Parse max price
         try {
             String smax = etMaxPrice.getText().toString().trim();
-            if (!smax.isEmpty()) max = Double.parseDouble(smax);
-        } catch (NumberFormatException ignored) {}
+            if (!smax.isEmpty()) {
+                max = Double.parseDouble(smax);
+                if (max < 0) {
+                    Toast.makeText(getContext(), "Giá tối đa phải >= 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Giá tối đa không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // Validate price range
+        if (min != null && max != null && min > max) {
+            Toast.makeText(getContext(), "Giá tối thiểu không được lớn hơn giá tối đa", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         progress.setVisibility(View.VISIBLE);
         HomeRepository repo = new HomeRepository(getContext(), BASE_URL);
         repo.getHomeListings(name.isEmpty() ? null : name, min, max).enqueue(new Callback<List<HomeListing>>() {
             @Override
             public void onResponse(Call<List<HomeListing>> call, Response<List<HomeListing>> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 progress.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
+                
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("HomeFragment", "Listings received: " + new Gson().toJson(response.body()));
-                    adapter.setItems(response.body());
+                    List<HomeListing> listings = response.body();
+                    Log.d("HomeFragment", "Listings received: " + listings.size() + " items");
+                    
+                    adapter.setItems(listings);
+                    
+                    if (listings.isEmpty()) {
+                        Toast.makeText(getContext(), "🔍 Không tìm thấy thẻ phù hợp", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "✓ Tìm thấy " + listings.size() + " thẻ", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     try {
-                        Log.e("HomeFragment", "Response error: " + response.code() + " " + response.errorBody().string());
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        Log.e("HomeFragment", "Response error: " + response.code() + " " + errorBody);
+                        Toast.makeText(getContext(), "Lỗi: " + response.message(), Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         Log.e("HomeFragment", "Response error: " + response.code());
+                        Toast.makeText(getContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(getContext(), "Failed to load home listings", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<HomeListing>> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
+                
                 progress.setVisibility(View.GONE);
                 swipeRefresh.setRefreshing(false);
                 Log.e("HomeFragment", "Network error", t);
-                Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "❌ Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -1,44 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:background="@color/admin_background">
 
+    <!-- Admin Header with Gradient -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:background="@drawable/admin_header_gradient"
+        android:padding="20dp"
+        android:elevation="4dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPendingCards"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Pending Cards" />
+            android:text="⚽ Admin Panel"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_white"
+            android:drawablePadding="8dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnUsers"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Users" />
+            android:text="Manage Football Card Trading Platform"
+            android:textSize="14sp"
+            android:textColor="@color/text_white"
+            android:alpha="0.9"
+            android:layout_marginTop="4dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAdminInventory"
-            android:layout_width="wrap_content"
+        <!-- Tab Buttons -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Inventory" />
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:gravity="center"
+                android:background="#33FFFFFF">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPendingCards"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="⏳ Pending"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_white"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:backgroundTint="@color/admin_accent"
+                    app:cornerRadius="20dp"
+                    app:strokeWidth="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUsers"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="👥 Users"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_white"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:backgroundTint="@android:color/transparent"
+                    app:cornerRadius="20dp"
+                    app:strokeColor="@color/text_white"
+                    app:strokeWidth="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAdminInventory"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="📦 Inventory"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_white"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:backgroundTint="@android:color/transparent"
+                    app:cornerRadius="20dp"
+                    app:strokeColor="@color/text_white"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
+    <!-- Content Area -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerAdmin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="30dp"
-        />
-
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="30dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 
 </LinearLayout>

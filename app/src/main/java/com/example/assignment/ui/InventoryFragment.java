@@ -104,10 +104,14 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onResponse(Call<List<MyCard>> call, Response<List<MyCard>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Convert MyCard to MyOwnedCard
+                    // Convert MyCard to MyOwnedCard - CHỈ hiển thị thẻ đã sở hữu (OWNED status)
                     List<MyOwnedCard> ownedCards = new ArrayList<>();
                     for (MyCard myCard : response.body()) {
-                        if ("SOLD".equalsIgnoreCase(myCard.getStatus()) || "APPROVED".equalsIgnoreCase(myCard.getStatus())) {
+                        // Chỉ hiển thị thẻ có status là OWNED (thẻ người dùng đang sở hữu)
+                        // Không hiển thị thẻ PENDING (đang chờ duyệt để bán lại)
+                        // Không hiển thị thẻ APPROVED (đã được duyệt nhưng chưa bán)
+                        // Không hiển thị thẻ SOLD (đã bán cho người khác)
+                        if ("OWNED".equalsIgnoreCase(myCard.getStatus())) {
                             MyOwnedCard ownedCard = new MyOwnedCard();
                             ownedCard.setId(myCard.getId());
                             ownedCard.setName(myCard.getName());
@@ -120,6 +124,9 @@ public class InventoryFragment extends Fragment {
                         }
                     }
                     adapter.setItems(ownedCards);
+                    if (ownedCards.isEmpty()) {
+                        Toast.makeText(getContext(), "No cards in inventory", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(getContext(), "Failed to load inventory", Toast.LENGTH_SHORT).show();
                 }

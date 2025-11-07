@@ -45,6 +45,14 @@ public interface ApiService {
     @PUT("/api/users/{id}")
     Call<Void> updateProfile(@Header("Authorization") String bearerToken, @Path("id") Long id, @Body com.example.assignment.data.model.UpdateProfileRequest req);
     
+    @Multipart
+    @POST("/api/users/{id}/avatar")
+    Call<java.util.Map<String, String>> uploadAvatar(
+        @Header("Authorization") String bearerToken,
+        @Path("id") Long id,
+        @Part okhttp3.MultipartBody.Part file
+    );
+    
     @GET("/api/users/me")
     Call<com.example.assignment.data.model.User> getCurrentUser(@Header("Authorization") String bearerToken);
 

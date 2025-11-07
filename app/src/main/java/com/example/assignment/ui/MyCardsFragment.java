@@ -135,6 +135,8 @@ public class MyCardsFragment extends Fragment {
             @Override
             public void onResponse(Call<java.util.List<MyCard>> call,
                                  Response<java.util.List<MyCard>> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     // Group MyCard list by status
                     java.util.List<MyCard> ownedCards = response.body();
@@ -166,6 +168,7 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<java.util.List<MyCard>> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -332,6 +335,8 @@ public class MyCardsFragment extends Fragment {
         repo.createMyCard(name, rarity, team, description, price, imageFile).enqueue(new Callback<MyCard>() {
             @Override
             public void onResponse(Call<MyCard> call, Response<MyCard> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 android.util.Log.d("MyCardsFragment", "Response code: " + response.code());
                 android.util.Log.d("MyCardsFragment", "Response message: " + response.message());
 
@@ -352,6 +357,7 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MyCard> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 android.util.Log.e("MyCardsFragment", "Network error: " + t.getMessage(), t);
                 Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -362,6 +368,8 @@ public class MyCardsFragment extends Fragment {
         repo.updateMyCard(id, name, rarity, team, description, price, imageFile).enqueue(new Callback<MyCard>() {
             @Override
             public void onResponse(Call<MyCard> call, Response<MyCard> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Cập nhật thẻ thành công!", Toast.LENGTH_SHORT).show();
                     loadMyCards();
@@ -372,12 +380,15 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MyCard> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void confirmDelete(MyCard card) {
+        if (!isAdded() || getContext() == null) return;
+        
         String status = card.getStatus() != null ? card.getStatus().toUpperCase() : "PENDING";
         if (!"PENDING".equals(status)) {
             Toast.makeText(getContext(), "Chỉ có thể xóa thẻ đang ở trạng thái PENDING", Toast.LENGTH_SHORT).show();
@@ -391,6 +402,8 @@ public class MyCardsFragment extends Fragment {
                     repo.deleteMyCard(card.getId()).enqueue(new Callback<java.util.Map<String, Boolean>>() {
                         @Override
                         public void onResponse(Call<java.util.Map<String, Boolean>> call, Response<java.util.Map<String, Boolean>> response) {
+                            if (!isAdded() || getContext() == null) return;
+                            
                             if (response.isSuccessful()) {
                                 Toast.makeText(getContext(), "Xóa thẻ thành công", Toast.LENGTH_SHORT).show();
                                 loadMyCards();
@@ -401,6 +414,7 @@ public class MyCardsFragment extends Fragment {
 
                         @Override
                         public void onFailure(Call<java.util.Map<String, Boolean>> call, Throwable t) {
+                            if (!isAdded() || getContext() == null) return;
                             Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -567,6 +581,8 @@ public class MyCardsFragment extends Fragment {
         repo.resellCard(cardId, newPrice).enqueue(new Callback<java.util.Map<String, Object>>() {
             @Override
             public void onResponse(Call<java.util.Map<String, Object>> call, Response<java.util.Map<String, Object>> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     Boolean success = (Boolean) response.body().get("success");
                     String message = (String) response.body().get("message");
@@ -589,6 +605,7 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -653,6 +670,8 @@ public class MyCardsFragment extends Fragment {
         repo.retryResell(cardId, newPrice).enqueue(new Callback<java.util.Map<String, Object>>() {
             @Override
             public void onResponse(Call<java.util.Map<String, Object>> call, Response<java.util.Map<String, Object>> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     Boolean success = (Boolean) response.body().get("success");
                     String message = (String) response.body().get("message");
@@ -675,6 +694,7 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -699,6 +719,8 @@ public class MyCardsFragment extends Fragment {
         repo.cancelResell(cardId).enqueue(new Callback<java.util.Map<String, Object>>() {
             @Override
             public void onResponse(Call<java.util.Map<String, Object>> call, Response<java.util.Map<String, Object>> response) {
+                if (!isAdded() || getContext() == null) return;
+                
                 if (response.isSuccessful() && response.body() != null) {
                     Boolean success = (Boolean) response.body().get("success");
                     String message = (String) response.body().get("message");
@@ -721,6 +743,7 @@ public class MyCardsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<java.util.Map<String, Object>> call, Throwable t) {
+                if (!isAdded() || getContext() == null) return;
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
