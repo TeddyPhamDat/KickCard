@@ -19,6 +19,7 @@
 
             <!-- Title with Football Icon -->
             <LinearLayout
+                android:paddingTop="40dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -81,7 +82,7 @@
                         android:layout_height="32dp"
                         android:src="@drawable/ic_profile"
                         android:contentDescription="User Icon"
-                        android:tint="@color/white"
+                        app:tint="@color/white"
                         android:layout_marginEnd="12dp" />
 
                     <!-- User Info -->
@@ -116,7 +117,7 @@
                         android:layout_height="28dp"
                         android:src="@drawable/ic_wallet"
                         android:contentDescription="Wallet Icon"
-                        android:tint="@color/card_gold" />
+                        app:tint="@color/card_gold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

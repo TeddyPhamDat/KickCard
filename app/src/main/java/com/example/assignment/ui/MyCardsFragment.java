@@ -44,6 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyCardsFragment extends Fragment {
+    private Button btnViewInventory;
     private static final int PICK_IMAGE_REQUEST = 1001;
     private static final int STORAGE_PERMISSION_CODE = 1002;
 
@@ -88,6 +89,7 @@ public class MyCardsFragment extends Fragment {
         btnSold = view.findViewById(R.id.btnSold);
         recycler = view.findViewById(R.id.recyclerMyCards);
         fabCreateListing = view.findViewById(R.id.fabCreateListing);
+        btnViewInventory = view.findViewById(R.id.btnViewInventory);
     }
 
     private void setupAdapter() {
@@ -128,6 +130,16 @@ public class MyCardsFragment extends Fragment {
         btnRejected.setOnClickListener(v -> showGroup("REJECTED"));
         btnSold.setOnClickListener(v -> showGroup("SOLD"));
         fabCreateListing.setOnClickListener(v -> showCreateDialog());
+        btnViewInventory.setOnClickListener(v -> {
+            // Create an instance of your InventoryFragment
+            InventoryFragment inventoryFragment = new InventoryFragment();
+
+            // Use the FragmentManager to replace the current fragment
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, inventoryFragment) // Replace 'R.id.fragment_container' with the ID of your fragment container in the main activity
+                    .addToBackStack(null) // Allows the user to press the back button to return here
+                    .commit();
+        });
     }
 
     private void loadMyCards() {

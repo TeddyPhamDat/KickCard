@@ -29,6 +29,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- View Inventory Button -->
+    <Button
+        android:id="@+id/btnViewInventory"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="View Inventory"
+        app:layout_constraintBottom_toBottomOf="@id/tvMyListingsTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvMyListingsTitle" />
+
     <!-- Filter Toggle Group -->
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/toggleButtonStatus"
