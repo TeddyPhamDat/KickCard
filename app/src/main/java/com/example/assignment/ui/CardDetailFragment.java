@@ -132,7 +132,14 @@ public class CardDetailFragment extends Fragment {
 
         // Set text for the details card
         tvCardStatus.setText(card.getStatus() != null ? card.getStatus().toUpperCase() : "N/A");
-        tvCardOwner.setText(card.getOwnerUsername() != null ? card.getOwnerUsername() : "Unowned");
+        
+        // Display owner username
+        String ownerName = card.getOwnerUsername();
+        if (ownerName != null && !ownerName.isEmpty()) {
+            tvCardOwner.setText(ownerName);
+        } else {
+            tvCardOwner.setText("Unknown");
+        }
 
         // Handle price and visibility of the details card
         if (card.getPrice() != null && card.getPrice() > 0) {

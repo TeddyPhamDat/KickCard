@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ public class InventoryFragment extends Fragment {
     private RecyclerView recycler;
     private InventoryAdapter adapter;
     private MyCardsRepository repo;
+    private TextView tvTotalCards, tvOnSaleCards;
     private static final String BASE_URL = "http://10.0.2.2:8080";
 
     @Nullable
@@ -47,6 +49,9 @@ public class InventoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recycler = view.findViewById(R.id.recyclerInventory);
+        tvTotalCards = view.findViewById(R.id.tvTotalCards);
+        tvOnSaleCards = view.findViewById(R.id.tvOnSaleCards);
+        
         adapter = new InventoryAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
@@ -104,26 +109,40 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onResponse(Call<List<MyCard>> call, Response<List<MyCard>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Convert MyCard to MyOwnedCard - CHỈ hiển thị thẻ đã sở hữu (OWNED status)
+                    // Convert MyCard to MyOwnedCard - Hiển thị TẤT CẢ thẻ người dùng sở hữu
                     List<MyOwnedCard> ownedCards = new ArrayList<>();
+                    int onSaleCount = 0;
+                    
                     for (MyCard myCard : response.body()) {
-                        // Chỉ hiển thị thẻ có status là OWNED (thẻ người dùng đang sở hữu)
-                        // Không hiển thị thẻ PENDING (đang chờ duyệt để bán lại)
-                        // Không hiển thị thẻ APPROVED (đã được duyệt nhưng chưa bán)
-                        // Không hiển thị thẻ SOLD (đã bán cho người khác)
-                        if ("OWNED".equalsIgnoreCase(myCard.getStatus())) {
-                            MyOwnedCard ownedCard = new MyOwnedCard();
-                            ownedCard.setId(myCard.getId());
-                            ownedCard.setName(myCard.getName());
-                            ownedCard.setRarity(myCard.getRarity());
-                            ownedCard.setTeam(myCard.getTeam());
-                            ownedCard.setDescription(myCard.getDescription());
-                            ownedCard.setBaseImageUrl(myCard.getBaseImageUrl());
-                            ownedCard.setPrice(myCard.getPrice());
-                            ownedCards.add(ownedCard);
+                        // Hiển thị TẤT CẢ thẻ mà user đang sở hữu (API đã filter theo ownerID)
+                        // PENDING: Thẻ mới tạo hoặc đang chờ admin duyệt để bán lại
+                        // APPROVED: Thẻ đã duyệt, đang rao bán trên marketplace
+                        // REJECTED: Thẻ bị admin từ chối, có thể sửa và bán lại
+                        // SOLD: Thẻ đã được mua (ownerID đã chuyển sang user hiện tại), có thể bán lại
+                        
+                        MyOwnedCard ownedCard = new MyOwnedCard();
+                        ownedCard.setId(myCard.getId());
+                        ownedCard.setName(myCard.getName());
+                        ownedCard.setRarity(myCard.getRarity());
+                        ownedCard.setTeam(myCard.getTeam());
+                        ownedCard.setDescription(myCard.getDescription());
+                        ownedCard.setBaseImageUrl(myCard.getBaseImageUrl());
+                        ownedCard.setPrice(myCard.getPrice());
+                        ownedCard.setStatus(myCard.getStatus());
+                        ownedCard.setRejectionReason(myCard.getRejectionReason());
+                        ownedCards.add(ownedCard);
+                        
+                        // Count cards on sale (PENDING or APPROVED)
+                        if ("PENDING".equalsIgnoreCase(myCard.getStatus()) || 
+                            "APPROVED".equalsIgnoreCase(myCard.getStatus())) {
+                            onSaleCount++;
                         }
                     }
+                    
+                    // Update UI
                     adapter.setItems(ownedCards);
+                    updateStats(ownedCards.size(), onSaleCount);
+                    
                     if (ownedCards.isEmpty()) {
                         Toast.makeText(getContext(), "No cards in inventory", Toast.LENGTH_SHORT).show();
                     }
@@ -137,5 +156,14 @@ public class InventoryFragment extends Fragment {
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void updateStats(int totalCards, int onSaleCards) {
+        if (tvTotalCards != null) {
+            tvTotalCards.setText(String.valueOf(totalCards));
+        }
+        if (tvOnSaleCards != null) {
+            tvOnSaleCards.setText(String.valueOf(onSaleCards));
+        }
     }
 }

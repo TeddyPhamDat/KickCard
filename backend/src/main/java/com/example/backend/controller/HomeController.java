@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 public class HomeController {
 
     private final CardRepository cardRepository;
+    private final com.example.backend.repository.UserRepository userRepository;
 
-    public HomeController(CardRepository cardRepository) {
+    public HomeController(CardRepository cardRepository, com.example.backend.repository.UserRepository userRepository) {
         this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/listings")
@@ -129,8 +131,36 @@ public class HomeController {
     }
 
     @GetMapping("/cards/{id}")
-    public Card cardDetails(@PathVariable Long id) {
-        return cardRepository.findById(id).orElse(null);
+    public org.springframework.http.ResponseEntity<?> cardDetails(@PathVariable Long id) {
+        Card card = cardRepository.findById(id).orElse(null);
+        if (card == null) {
+            return org.springframework.http.ResponseEntity.notFound().build();
+        }
+        
+        // Create DTO with owner username
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("id", card.getId());
+        response.put("name", card.getName());
+        response.put("rarity", card.getRarity());
+        response.put("team", card.getTeam());
+        response.put("description", card.getDescription());
+        response.put("baseImageUrl", card.getBaseImageUrl());
+        response.put("ownerId", card.getOwnerId());
+        response.put("price", card.getPrice());
+        response.put("status", card.getStatus());
+        response.put("rejectionReason", card.getRejectionReason());
+        
+        // Get owner username
+        String ownerUsername = "Unknown";
+        if (card.getOwnerId() != null) {
+            com.example.backend.model.User owner = userRepository.findById(card.getOwnerId()).orElse(null);
+            if (owner != null) {
+                ownerUsername = owner.getUsername();
+            }
+        }
+        response.put("ownerUsername", ownerUsername);
+        
+        return org.springframework.http.ResponseEntity.ok(response);
     }
 }
 

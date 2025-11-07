@@ -1,27 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="0dp">
+    android:background="@color/admin_background">
 
-    <LinearLayout
+    <!-- Background Image -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:layout_height="match_parent"
+        android:alpha="0.08"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_soccer_stadium_background"
+        android:contentDescription="Background" />
 
-        <androidx.cardview.widget.CardView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:elevation="6dp"
-            android:background="#FFFFFF"
-            app:cardCornerRadius="18dp">
+            android:orientation="vertical">
+
+            <!-- Header with Gradient -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/header_football_gradient"
+                android:padding="20dp"
+                android:elevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_profile"
+                        android:tint="@android:color/white"
+                        android:contentDescription="Profile Icon" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="⚽ My Profile"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:padding="16dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="8dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -29,120 +81,252 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Avatar/Icon -->
-                <ImageView
-                    android:id="@+id/imgProfileAvatar"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:src="@android:drawable/sym_def_app_icon"
+                <!-- Avatar/Icon with Background -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="16dp" />
+                    app:cardCornerRadius="45dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/stadium_green"
+                    app:strokeWidth="3dp">
+
+                    <ImageView
+                        android:id="@+id/imgProfileAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_profile"
+                        android:scaleType="centerCrop"
+                        android:padding="12dp"
+                        android:background="@color/pitch_green"
+                        android:tint="@android:color/white" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Name -->
                 <TextView
                     android:id="@+id/tvProfName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:textStyle="bold"
-                    android:textSize="22sp"
+                    android:textSize="24sp"
                     android:text="Bob Trader"
-                    android:textColor="#2D1763"
+                    android:textColor="@color/stadium_green"
                     android:gravity="center"
                     android:layout_marginBottom="8dp" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="@color/pitch_green"
+                    android:alpha="0.2" />
 
                 <!-- Email -->
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#7C4DFF"
-                    android:layout_marginTop="4dp" />
-                <TextView
-                    android:id="@+id/tvProfEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="bob@trader.com"
-                    android:textSize="15sp"
-                    android:textColor="#222222"
-                    android:layout_marginBottom="10dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_admin"
+                        android:tint="@color/stadium_green"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Email"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvProfEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="bob@trader.com"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <!-- Phone -->
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Phone"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#7C4DFF" />
-                <TextView
-                    android:id="@+id/tvProfPhone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="0981-123-1213"
-                    android:textSize="15sp"
-                    android:textColor="#222222"
-                    android:layout_marginBottom="10dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_admin"
+                        android:tint="@color/stadium_green"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phone"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvProfPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0981-123-1213"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <!-- Address -->
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Address"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textColor="#7C4DFF" />
-                <TextView
-                    android:id="@+id/tvProfAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="123 Trader Street"
-                    android:textSize="15sp"
-                    android:textColor="#222222"
-                    android:layout_marginBottom="16dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
-                <!-- Balance -->
-                <TextView
-                    android:id="@+id/tvProfBalance"
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_home"
+                        android:tint="@color/stadium_green"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Address"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tvProfAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="123 Trader Street"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Balance Card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Balance: $0.00"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50"
-                    android:gravity="center"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginTop="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/pitch_green">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_wallet"
+                            android:tint="@android:color/white"
+                            android:layout_marginEnd="12dp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Wallet Balance"
+                                android:textSize="12sp"
+                                android:textColor="@android:color/white"
+                                android:alpha="0.8" />
+
+                            <TextView
+                                android:id="@+id/tvProfBalance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="VND 0"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@android:color/white"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Edit Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnProfEdit"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="EDIT"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#7C4DFF"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginHorizontal="24dp"
+            android:text="✏️ Edit Profile"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp" />
+            android:backgroundTint="@color/stadium_green"
+            app:icon="@drawable/ic_profile"
+            app:cornerRadius="12dp" />
 
         <!-- Logout Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="LOGOUT"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#DC3545"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="32dp"
+            android:text="🚪 Logout"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp" />
+            android:textColor="@color/rejected_red"
+            app:strokeColor="@color/rejected_red"
+            app:cornerRadius="12dp" />
 
-    </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
-</ScrollView>
+</FrameLayout>

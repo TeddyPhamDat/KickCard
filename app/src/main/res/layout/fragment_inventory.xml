@@ -1,49 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FAFAFA">
+    android:background="#F5F5F5">
 
-    <TextView
-        android:id="@+id/tvInventoryTitle"
+    <!-- Header with Gradient -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My Inventory"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#7C4DFF"
-        android:gravity="center"
-        android:layout_marginBottom="8dp" />
+        android:orientation="vertical"
+        android:background="@drawable/header_football_gradient"
+        android:padding="20dp"
+        android:elevation="4dp">
 
-    <TextView
-        android:id="@+id/tvInventoryNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ghi chú: Đây là danh sách các thẻ bạn sở hữu. Bạn có thể bán lại thẻ bằng nút Resell."
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:gravity="center"
-        android:layout_marginBottom="8dp" />
+        <!-- Title Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-    <Button
-        android:id="@+id/btnInventoryBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thoát ra"
-        android:backgroundTint="#7C4DFF"
-        android:textColor="#FFFFFF"
-        android:layout_gravity="end"
-        android:layout_marginBottom="8dp" />
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_wallet"
+                android:tint="@android:color/white"
+                android:contentDescription="Inventory Icon" />
 
+            <TextView
+                android:id="@+id/tvInventoryTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="My Inventory"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnInventoryBack"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:textColor="@android:color/white"
+                app:strokeColor="@android:color/white"
+                app:cornerRadius="8dp"
+                android:minWidth="60dp" />
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tvInventoryNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Manage your card collection. Resell OWNED or REJECTED cards to the marketplace."
+            android:textSize="14sp"
+            android:textColor="#E0E0E0"
+            android:lineSpacingExtra="2dp" />
+
+        <!-- Stats Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <!-- Total Cards -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_cards"
+                        android:tint="@color/bright_green" />
+
+                    <TextView
+                        android:id="@+id/tvTotalCards"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="0"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Cards"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@color/text_secondary" />
+
+                <!-- On Sale -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_wallet"
+                        android:tint="@color/pending_orange" />
+
+                    <TextView
+                        android:id="@+id/tvOnSaleCards"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="0"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="On Sale"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerInventory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFFFFF"
-        android:layout_marginTop="8dp"
-        android:elevation="2dp" />
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
 
 </LinearLayout>
