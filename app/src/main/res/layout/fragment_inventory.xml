@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Manage your card collection. Resell OWNED or REJECTED cards to the marketplace."
+            android:text="Manage your card collection. Resell REJECTED cards to the marketplace."
             android:textSize="14sp"
             android:textColor="#E0E0E0"
             android:lineSpacingExtra="2dp" />

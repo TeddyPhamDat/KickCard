@@ -54,13 +54,13 @@ public class HomeListingAdapter extends RecyclerView.Adapter<HomeListingAdapter.
         }
         
         // Owner info
-        String ownerName = l.getOwnerName();
-        if (ownerName != null && !ownerName.isEmpty()) {
-            holder.tvOwner.setText("Owner: " + ownerName);
-            holder.tvOwner.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvOwner.setVisibility(View.GONE);
-        }
+//        String ownerName = l.getOwnerName();
+//        if (ownerName != null && !ownerName.isEmpty()) {
+//            holder.tvOwner.setText("Owner: " + ownerName);
+//            holder.tvOwner.setVisibility(View.VISIBLE);
+//        } else {
+//            holder.tvOwner.setVisibility(View.GONE);
+//        }
         
         // Price formatting
         holder.tvPrice.setText(String.format("VND %,.0f", l.getPrice()));
