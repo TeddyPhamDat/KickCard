@@ -61,10 +61,15 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.Inve
         }
         
         // Status
-        String status = card.getStatus() != null ? card.getStatus() : "OWNED";
-        holder.tvStatus.setText(status);
-        holder.tvStatus.setBackgroundResource(getStatusBackground(status));
-        holder.tvStatus.setTextColor(holder.itemView.getContext().getColor(getStatusColor(status)));
+        String status = card.getStatus();
+        if (status != null && !status.isEmpty()) {
+            holder.tvStatus.setText(status.toUpperCase());
+            holder.tvStatus.setBackgroundResource(getStatusBackground(status));
+            holder.tvStatus.setTextColor(holder.itemView.getContext().getColor(getStatusColor(status)));
+            holder.tvStatus.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvStatus.setVisibility(View.GONE);
+        }
         
         // Price
         Double price = card.getPrice();
