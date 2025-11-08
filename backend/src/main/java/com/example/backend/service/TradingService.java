@@ -75,7 +75,7 @@ public class TradingService {
         // Cộng tiền admin (nếu có)
         try {
             User admin = userRepository.findAll().stream()
-                .filter(u -> u.getRole() != null && u.getRole().toUpperCase().contains("ADMIN"))
+                .filter(u -> u.getRole() != null && u.getRole().toUpperCase().contains("ROLE_ADMIN"))
                 .findFirst()
                 .orElse(null);
             if (admin != null) {
